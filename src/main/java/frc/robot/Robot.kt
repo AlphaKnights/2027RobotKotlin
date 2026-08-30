@@ -6,14 +6,13 @@ package frc.robot
 import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.LimelightSubsystem
 import frc.robot.subsystems.aiming.AimingCalc
-import org.wpilib.command3.CommandScheduler
+import org.wpilib.command3.Scheduler
 import org.wpilib.driverstation.DriverStation
 import org.wpilib.framework.TimedRobot
 import org.wpilib.hardware.hal.HAL
-import org.wpilib.wpilibj.RobotController
-import org.wpilib.wpilibj.TimedRobot
-import org.wpilib.wpilibj.smartdashboard.SmartDashboard
-import org.wpilib.wpilibj.util.WPILibVersion
+import org.wpilib.system.RobotController
+import org.wpilib.smartdashboard.SmartDashboard
+import org.wpilib.system.WPILibVersion
 
 /**
  * The functions in this object (which basically functions as a singleton class) are called automatically
@@ -25,7 +24,7 @@ import org.wpilib.wpilibj.util.WPILibVersion
  * the `Main.kt` file in the project. (If you use the IDE's Rename or Move refactorings when renaming the
  * object or package, it will get changed everywhere.)
  */
-object Robot : TimedRobot() {
+class Robot : TimedRobot() {
     /**
      * The autonomous command to run. While a default value is set here,
      * the method will set it to the value selected in
@@ -40,9 +39,8 @@ object Robot : TimedRobot() {
 
         // Report the use of the Kotlin Language for "FRC Usage Report" statistics.
         // Please retain this line so that Kotlin's growing use by teams is seen by FRC/WPI.
-        HAL.report(
-            tResourceType.kResourceType_Language,
-            tInstances.kLanguage_Kotlin,
+        HAL.reportUsage(
+            "Kotlin",
             0,
             WPILibVersion.Version,
         )
@@ -64,17 +62,17 @@ object Robot : TimedRobot() {
         // commands, running already-scheduled commands, removing finished or interrupted commands,
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
-        CommandScheduler.getInstance().run()
+        Scheduler.getDefault().run()
 
-        SmartDashboard.putNumber(
-            "Match Time",
-            DriverStation.getMatchTime(),
-        )
-        SmartDashboard.putNumber(
-            "CAN Utilization",
-            RobotController.getCANStatus().percentBusUtilization *
-                100,
-        )
+//        SmartDashboard.putNumber(
+//            "Match Time",
+//            DriverStation.getMatchTime(),
+//        )
+//        SmartDashboard.putNumber(
+//            "CAN Utilization",
+//            RobotController.getCANStatus().percentBusUtilization *
+//                100,
+//        )
         SmartDashboard.putBoolean(
             "Tag Detected",
             LimelightSubsystem.tagPose != null,
@@ -105,11 +103,14 @@ object Robot : TimedRobot() {
     override fun autonomousInit() {
         // We store the command as a Robot property in the rare event that the selector on the dashboard
         // is modified while the command is running since we need to access it again in teleopInit()
-        CommandScheduler.getInstance().schedule(RobotContainer.getAutonomousCommand())
+        Scheduler.getDefault().schedule(RobotContainer.getAutonomousCommand())
     }
 
-    override fun testInit() {
-        // Cancels all running commands at the start of test mode.
-        CommandScheduler.getInstance().cancelAll()
+    override fun utilityInit() {
+        super.utilityInit()
+        // Cancels all running commands at the start of test (utility?) mode.
+        Scheduler.getDefault().cancelAll()
     }
+
+
 }

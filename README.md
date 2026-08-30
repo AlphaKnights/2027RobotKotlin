@@ -28,7 +28,7 @@ You will need to install certain plugins to properly work within this project:
 **Spotless Gradle** *(Required)* - Code linter that enforces and fixes broader styling conventions
 ## Gradle Configuration
 
-In the IDE settings, set the **Gradle JVM** to **Java 17**. If not prompted, make sure you run **Sync All Gradle Projects** to make sure *Code Completion* works properly. You will need to run this whenever you update your dependencies.
+In the IDE settings, set the **Gradle JVM** to **Java 25**. If not prompted, make sure you run **Sync All Gradle Projects** to make sure *Code Completion* works properly. You will need to run this whenever you update your dependencies.
 
 ## Grabbing dependencies and vendordeps
 

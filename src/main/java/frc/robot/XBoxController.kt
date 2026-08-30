@@ -4,7 +4,15 @@ import org.wpilib.command3.Trigger
 import org.wpilib.command3.button.CommandGamepad
 import org.wpilib.math.util.MathUtil.applyDeadband
 
-class CommandGamepad : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT) {
+/*
+
+     leftstick         [] (back)    = (start)       Y (northFace)
+                                            X (westFace)    B (eastFace)
+                                                    A (southFace)
+                    d-pad               rightstick
+ */
+
+class Controller : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT) {
     private var lerpX = 0.0
     private var lerpY = 0.0
     private var lerpRot = 0.0
@@ -49,7 +57,7 @@ class CommandGamepad : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
 
     fun deliveryScale(): Double = getLeftTriggerAxis()
 
-    fun heading(): Trigger = Trigger { frc.robot.CommandGamepad }
+    fun heading(): Trigger = this.eastFace()
 
     //   fun alignL() : Trigger {
     //      return Trigger { xButton }
@@ -57,7 +65,7 @@ class CommandGamepad : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
     // fun alignR() : Trigger {
     //   return Trigger { bButton }
     // }
-    fun autoAim(): Trigger = Trigger { aButton }
+    fun autoAim(): Trigger = this.westFace()
 
     fun lerp(
         ref: Double,
@@ -78,9 +86,9 @@ class CommandGamepad : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
         }
     }
 
-    fun resetOdometry(): Trigger = Trigger { rightStickButton }
+    fun resetOdometry(): Trigger = this.rightStick()
 
-    fun driveToArc(): Trigger = Trigger { startButton }
+    fun driveToArc(): Trigger = this.start()
 
 //    fun slideLeft(): Trigger {
 //        return Trigger { leftBumperButton }
@@ -90,17 +98,15 @@ class CommandGamepad : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
 //        return Trigger { rightBumperButton }
 //    }
 
-    fun north(): Trigger {
-        return Trigger { startButton } // Select Button
-    }
+    fun north(): Trigger = this.back() // Select Button
 
-    fun XLock(): Trigger = Trigger { leftBumperButton }
+    fun XLock(): Trigger = this.leftBumper()
 
-    fun altDelivery(): Trigger = Trigger { aButton }
+    fun altDelivery(): Trigger = this.southFace()
 
-    fun altIntake(): Trigger = Trigger { rightBumperButton }
+    fun altIntake(): Trigger = this.rightBumper()
 
-    fun altIndexer(): Trigger = Trigger { bButton }
+    fun altIndexer(): Trigger = this.eastFace()
 
-    fun shake(): Trigger = Trigger { xButton }
+    fun shake(): Trigger = this.westFace()
 }
