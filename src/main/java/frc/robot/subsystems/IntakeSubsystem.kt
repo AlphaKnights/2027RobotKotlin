@@ -19,8 +19,8 @@ import com.revrobotics.spark.config.ClosedLoopConfig
 import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
 import frc.robot.Constants
-import org.wpilib.command3.SubsystemBase
-import org.wpilib.wpilibj.DigitalInput
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.hardware.discrete.DigitalInput
 
 object IntakeSubsystem : SubsystemBase() {
     private val CAN = CANBus("didy")
@@ -111,11 +111,11 @@ object IntakeSubsystem : SubsystemBase() {
 
     override fun periodic() {
         super.periodic()
-        println("Lever Position = ${leftLeverMotor.position}")
+        //println("Lever Position = ${leftLeverMotor.position}")
     }
 
     fun runIntake(speed: Double) {
-        intakeMotor.set(-speed)
+        intakeMotor.throttle = -speed
     }
 
     fun setPosition(position: Double) {
@@ -128,8 +128,8 @@ object IntakeSubsystem : SubsystemBase() {
     fun isInPosition(deadzone: Double): Boolean = (rightleverMotor.getClosedLoopError().valueAsDouble < deadzone)
 
     fun moveLever(speed: Double) {
-        rightleverMotor.set(speed)
-        leftLeverMotor.set(-speed)
+        rightleverMotor.throttle = speed
+        leftLeverMotor.throttle -speed
     }
 
     fun getPosition(): Double = rightleverMotor.position.valueAsDouble

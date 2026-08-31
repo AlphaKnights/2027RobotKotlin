@@ -2,13 +2,13 @@ package frc.robot.commands
 
 import frc.robot.Constants
 import frc.robot.subsystems.DriveSubsystem
-import org.wpilib.command3.Command
-import org.wpilib.command3.WrapperCommand
-import org.wpilib.math.MathUtil.clamp
+import org.wpilib.command2.Command
+import org.wpilib.command2.WrapperCommand
 import org.wpilib.math.controller.PIDController
 import org.wpilib.math.geometry.Pose2d
 import org.wpilib.math.geometry.Rotation2d
-import org.wpilib.math.kinematics.ChassisSpeeds
+import org.wpilib.math.kinematics.ChassisVelocities
+import java.lang.Math.clamp
 
 class DriveSetPointCommand(
     private val X: () -> Double,
@@ -66,7 +66,7 @@ class DriveSetPointCommand(
             ) * Constants.DriveConstants.MAX_METERS_PER_SECOND
 
         DriveSubsystem.drive(
-            ChassisSpeeds(
+            ChassisVelocities(
                 driveSpeedX,
                 driveSpeedY,
                 rotSpeed,

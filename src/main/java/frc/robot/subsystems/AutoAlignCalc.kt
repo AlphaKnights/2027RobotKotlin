@@ -5,7 +5,7 @@ package frc.robot.subsystems
 
 import frc.robot.Constants
 import org.wpilib.math.geometry.Pose3d
-import org.wpilib.math.kinematics.ChassisSpeeds
+import org.wpilib.math.kinematics.ChassisVelocities
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -19,7 +19,7 @@ object AutoAlignCalc {
         goalX: Double,
         goalZ: Double,
         curPose: Pose3d,
-    ): ChassisSpeeds {
+    ): ChassisVelocities {
         // Units are in meters and radians
         var x: Double = -curPose.x // Inverted to match the robot's coordinate system
         var z: Double = curPose.z
@@ -103,7 +103,7 @@ object AutoAlignCalc {
         dist = sqrt(dist)
         angularDistance = sqrt(angularDistance)
 
-        return ChassisSpeeds(
+        return ChassisVelocities(
             zNormalized * dist *
                 Constants.AlignConstants.MAX_SPEED,
             -xNormalized * dist *

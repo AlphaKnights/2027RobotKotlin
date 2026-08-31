@@ -9,7 +9,8 @@ import frc.robot.subsystems.DriveSubsystem
 import org.wpilib.math.geometry.Pose2d
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.geometry.Translation2d
-import org.wpilib.wpilibj.DriverStation
+import org.wpilib.driverstation.Alliance
+import org.wpilib.driverstation.MatchState
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -18,8 +19,7 @@ object DriveToArcPoseGenerator {
     fun generatePath(): Pose2d {
         val curpose = DriveSubsystem.getPose()
 
-        val allianceRed =
-            (DriverStation.getAlliance().get() ?: DriverStation.Alliance.Red) == DriverStation.Alliance.Red
+        val allianceRed = (MatchState.getAlliance().get()) == Alliance.BLUE
         val hubPos =
             if (allianceRed) {
                 Translation2d(AimingConstants.RED_HUB_X, AimingConstants.RED_HUB_Y)

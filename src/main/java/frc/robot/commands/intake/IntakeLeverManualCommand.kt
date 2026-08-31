@@ -2,8 +2,7 @@ package frc.robot.commands.intake
 
 import frc.robot.Constants
 import frc.robot.subsystems.IntakeSubsystem
-import org.wpilib.command3.Command
-import org.wpilib.wpilibj.DigitalInput
+import org.wpilib.command2.Command
 
 class IntakeLeverManualCommand(
     private val direction: Constants.IntakeDirection,

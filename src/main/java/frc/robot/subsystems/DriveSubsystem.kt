@@ -9,23 +9,20 @@ import com.pathplanner.lib.config.RobotConfig
 import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.util.DriveFeedforwards
 import frc.robot.Constants
-import frc.robot.XBoxController
-import frc.robot.subsystems.aiming.DriveToArcPoseGenerator
-import org.wpilib.command3.SubsystemBase
+import frc.robot.XboxController
+import org.wpilib.command2.SubsystemBase
 import org.wpilib.math.geometry.Pose2d
 import org.wpilib.math.geometry.Rotation2d
-import org.wpilib.math.geometry.Transform2d
 import org.wpilib.math.geometry.Translation2d
-import org.wpilib.math.kinematics.ChassisSpeeds
+import org.wpilib.math.kinematics.ChassisVelocities
 import org.wpilib.math.kinematics.SwerveDriveOdometry
-import org.wpilib.math.kinematics.SwerveModuleState
+import org.wpilib.math.kinematics.SwerveModuleVelocity
 import org.wpilib.networktables.DoublePublisher
 import org.wpilib.networktables.NetworkTableInstance
 import org.wpilib.networktables.StructArrayPublisher
-import org.wpilib.wpilibj.DriverStation
 
 object DriveSubsystem : SubsystemBase() {
-    private val xBoxController = XBoxController()
+    private val xBoxController = XboxController()
 
     private var frontLeft: TalonSwerveModule =
         TalonSwerveModule(
@@ -65,10 +62,10 @@ object DriveSubsystem : SubsystemBase() {
 
     private val config: RobotConfig = RobotConfig.fromGUISettings()
 
-    var swervePublisher: StructArrayPublisher<SwerveModuleState> =
+    var swervePublisher: StructArrayPublisher<SwerveModuleVelocity> =
         NetworkTableInstance
             .getDefault()
-            .getStructArrayTopic("MyStates", SwerveModuleState.struct)
+            .getStructArrayTopic("MyStates", SwerveModuleVelocity.struct)
             .publish()
     var currentPublisher: DoublePublisher =
         NetworkTableInstance
@@ -98,7 +95,7 @@ object DriveSubsystem : SubsystemBase() {
             this::getPose,
             this::resetPose,
             this::getCurrentSpeeds,
-            { speeds: ChassisSpeeds, _: DriveFeedforwards ->
+            { speeds: ChassisVelocities, _: DriveFeedforwards ->
                 drive(speeds, fieldRelative = false)
             },
             PPHolonomicDriveController(
@@ -138,7 +135,7 @@ object DriveSubsystem : SubsystemBase() {
         // println("ArcPose = ${DriveToArcPoseGenerator.generatePath()}")
         // println("AllianceRed = ${(DriverStation.getAlliance() ?: DriverStation.Alliance.Red) == DriverStation.Alliance.Red}")
 
-        val states: Array<SwerveModuleState> =
+        val states: Array<SwerveModuleVelocity> =
             arrayOf(
                 frontLeft.getState(),
                 frontRight.getState(),
@@ -157,17 +154,17 @@ object DriveSubsystem : SubsystemBase() {
 //        }
 
 //        println("Front Right:"+ FrontRightEncoder.getVelocity())
-//        println("Front Right Speed: "+frontRight.getState().speedMetersPerSecond)
-//        println("Front Left Speed: "+frontLeft.getState().speedMetersPerSecond)
-//        println("Back Right Speed: "+rearRight.getState().speedMetersPerSecond)
-//        println("Back Left Speed: "+rearLeft.getState().speedMetersPerSecond)
+//        println("Front Right Speed: "+frontRight.getState().velocity)
+//        println("Front Left Speed: "+frontLeft.getState().velocity)
+//        println("Back Right Speed: "+rearRight.getState().velocity)
+//        println("Back Left Speed: "+rearLeft.getState().velocity)
 //        println("Odometry:"+getPose())
 //
 //        println("angle:"+gyro.getYaw())
 //        println(xBoxController.getRawAxis(0))
     }
 
-    fun getPose(): Pose2d = odometry.poseMeters
+    fun getPose(): Pose2d = odometry.pose
 
     fun resetPose(pose: Pose2d) {
         resetOdometry(pose)
@@ -175,8 +172,8 @@ object DriveSubsystem : SubsystemBase() {
 
     // IDE bug, the detected and actual signatures are different
     @Suppress("TYPE_MISMATCH", "TOO_MANY_ARGUMENTS")
-    fun getCurrentSpeeds(): ChassisSpeeds =
-        Constants.DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
+    fun getCurrentSpeeds(): ChassisVelocities =
+        Constants.DriveConstants.DRIVE_KINEMATICS.toChassisVelocities(
             frontLeft.getState(),
             frontRight.getState(),
             rearLeft.getState(),
@@ -201,45 +198,45 @@ object DriveSubsystem : SubsystemBase() {
     }
 
     fun drive(
-        speeds: ChassisSpeeds,
+        speeds: ChassisVelocities,
         fieldRelative: Boolean,
     ) {
-        var swerveModuleStates = Constants.DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds)
+        var SwerveModuleVelocities = Constants.DriveConstants.DRIVE_KINEMATICS.toSwerveModuleVelocities(speeds)
 
         if (fieldRelative) {
-            swerveModuleStates =
-                Constants.DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(speeds, Rotation2d.fromDegrees(gyro.yaw.valueAsDouble)),
+            SwerveModuleVelocities =
+                Constants.DriveConstants.DRIVE_KINEMATICS.toSwerveModuleVelocities(
+                    speeds.toFieldRelative(Rotation2d.fromDegrees(gyro.yaw.valueAsDouble)),
                 ) // gyro.getRotation2d()
         }
 
-        frontLeft.setDesiredState(swerveModuleStates[0])
-        frontRight.setDesiredState(swerveModuleStates[1])
-        rearLeft.setDesiredState(swerveModuleStates[2])
-        rearRight.setDesiredState(swerveModuleStates[3])
+        frontLeft.setDesiredState(SwerveModuleVelocities[0])
+        frontRight.setDesiredState(SwerveModuleVelocities[1])
+        rearLeft.setDesiredState(SwerveModuleVelocities[2])
+        rearRight.setDesiredState(SwerveModuleVelocities[3])
     }
 
     fun setX() {
         frontLeft.setDesiredState(
-            SwerveModuleState(
+            SwerveModuleVelocity(
                 0.0,
                 Rotation2d.fromDegrees(45.0),
             ),
         )
         frontRight.setDesiredState(
-            SwerveModuleState(
+            SwerveModuleVelocity(
                 0.0,
                 Rotation2d.fromDegrees(-45.0),
             ),
         )
         rearLeft.setDesiredState(
-            SwerveModuleState(
+            SwerveModuleVelocity(
                 0.0,
                 Rotation2d.fromDegrees(-45.0),
             ),
         )
         rearRight.setDesiredState(
-            SwerveModuleState(
+            SwerveModuleVelocity(
                 0.0,
                 Rotation2d.fromDegrees(45.0),
             ),

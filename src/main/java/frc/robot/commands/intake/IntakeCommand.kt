@@ -2,7 +2,7 @@ package frc.robot.commands.intake
 
 import frc.robot.Constants
 import frc.robot.subsystems.IntakeSubsystem
-import org.wpilib.command3.Command
+import org.wpilib.command2.Command
 
 class IntakeCommand(
     private val isReversed: Boolean,

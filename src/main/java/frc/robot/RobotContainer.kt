@@ -3,16 +3,13 @@ import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.commands.PathPlannerAuto
 import frc.robot.commands.*
 import frc.robot.commands.autoalign.AutoAlignAutoCommand
-import frc.robot.commands.autoalign.AutoAlignManualCommand
 import frc.robot.commands.intake.*
 import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.LimelightSubsystem
-import org.wpilib.command3.Command
-import org.wpilib.command3.InstantCommand
-import org.wpilib.command3.SequentialCommandGroup
-import org.wpilib.command3.WaitCommand
-import org.wpilib.command3.button.CommandJoystick
-import org.wpilib.wpilibj.GenericHID
+import org.wpilib.command2.Command
+import org.wpilib.command2.InstantCommand
+import org.wpilib.command2.button.CommandJoystick
+import org.wpilib.driverstation.GenericHID
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -27,7 +24,7 @@ import org.wpilib.wpilibj.GenericHID
  */
 object RobotContainer {
     // private val joystickController = JoystickController()
-    private val xBoxController = Controller()
+    private val xBoxController = XboxController()
 
     private val buttonBoard = CommandJoystick(Constants.OperatorConstants.BUTTON_BOARD_PORT)
 
@@ -35,7 +32,7 @@ object RobotContainer {
         LimelightSubsystem.startPolling()
 
         NamedCommands.registerCommands(
-            mapOf(
+            mapOf<String, Command>(
                 "Left" to AutoAlignAutoCommand(Constants.AlignDirection.LEFT),
                 "Right" to AutoAlignAutoCommand(Constants.AlignDirection.RIGHT),
                 "Delivery" to AutoDeliveryCommand(Constants.LaunchConstants.LAUNCH_SPEED),
@@ -150,12 +147,12 @@ object RobotContainer {
             )
         buttonBoard.button(6).multiPress(2, 1.0).toggleOnTrue(
             InstantCommand({
-                xBoxController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0)
+                xBoxController.setRumble(GenericHID.RumbleType.LEFT_RUMBLE, 1.0)
             }),
         )
         buttonBoard.button(6).multiPress(2, 1.0).toggleOnFalse(
             InstantCommand({
-                xBoxController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
+                xBoxController.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 0.0)
             }),
         )
 
@@ -244,9 +241,9 @@ object RobotContainer {
     }
 
     fun getAutonomousCommand(): Command {
-        // return commands2.SequentialCommandGroup(commands2.InstantCommand(lambda: self.robotDrive.drive(ChassisSpeeds(-8, 0, 0), False, False), self.robotDrive),
+        // return commands2.SequentialCommandGroup(commands2.InstantCommand(lambda: self.robotDrive.drive(ChassisVelocities(-8, 0, 0), False, False), self.robotDrive),
         //        #                                         commands2.WaitCommand(AutoConstants.kTimedTime),
-        //        #                                         commands2.InstantCommand(lambda: self.robotDrive.drive(ChassisSpeeds(0, 0, 0), False, False), self.robotDrive)
+        //        #                                         commands2.InstantCommand(lambda: self.robotDrive.drive(ChassisVelocities(0, 0, 0), False, False), self.robotDrive)
         //        #                                         )
 
         return PathPlannerAuto(

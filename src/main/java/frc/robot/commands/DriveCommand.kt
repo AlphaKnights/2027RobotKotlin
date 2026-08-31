@@ -6,8 +6,8 @@ package frc.robot.commands
 import frc.robot.Constants
 import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.aiming.AimingCalc
-import org.wpilib.command3.Command
-import org.wpilib.math.kinematics.ChassisSpeeds
+import org.wpilib.command2.Command
+import org.wpilib.math.kinematics.ChassisVelocities
 
 class DriveCommand(
     private val x: () -> Double,
@@ -25,7 +25,7 @@ class DriveCommand(
 
         if (!autoAngle()) {
             DriveSubsystem.drive(
-                ChassisSpeeds(
+                ChassisVelocities(
                     x() *
                         Constants.DriveConstants.MAX_METERS_PER_SECOND,
                     y() *
@@ -37,15 +37,15 @@ class DriveCommand(
             )
         } else {
             DriveSubsystem.drive(
-                ChassisSpeeds(
+                ChassisVelocities(
                     x() *
                         Constants.DriveConstants.MAX_METERS_PER_SECOND,
                     y() *
                         Constants.DriveConstants.MAX_METERS_PER_SECOND,
                     AimingCalc.getAimingAngleChange(
                         DriveSubsystem.getPose(),
-                        DriveSubsystem.getCurrentSpeeds().vxMetersPerSecond,
-                        DriveSubsystem.getCurrentSpeeds().vyMetersPerSecond,
+                        DriveSubsystem.getCurrentSpeeds().vx,
+                        DriveSubsystem.getCurrentSpeeds().vy,
                     ),
                 ),
                 fieldRelative = fieldRel,
@@ -66,7 +66,7 @@ class DriveCommand(
 
     override fun end(interrupted: Boolean) {
         DriveSubsystem.drive(
-            ChassisSpeeds(
+            ChassisVelocities(
                 0.0,
                 0.0,
                 0.0,

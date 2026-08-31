@@ -5,8 +5,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
 import frc.robot.Constants.LaunchConstants
-import org.wpilib.command3.SubsystemBase
-import org.wpilib.wpilibj.Ultrasonic
+import org.wpilib.command2.SubsystemBase
 
 object DeliverySubsystem : SubsystemBase() {
     /*
@@ -30,7 +29,7 @@ object DeliverySubsystem : SubsystemBase() {
         )
 
     init {
-        Ultrasonic.setAutomaticMode(true)
+        //Ultrasonic.setAutomaticMode(true)
 
         val launchMotorConfig1 =
             TalonFXConfiguration().apply {
@@ -96,8 +95,8 @@ object DeliverySubsystem : SubsystemBase() {
     fun forward(launchProp: Double) {
         // leftLaunchMotor.setControl(VelocityVoltage(launchProp))
         // rightLaunchMotor.setControl(VelocityVoltage(launchProp))
-        leftLaunchMotor.set(launchProp)
-        rightLaunchMotor.set(-launchProp)
+        leftLaunchMotor.throttle = launchProp
+        rightLaunchMotor.throttle = -launchProp
     }
 
     fun stop() {

@@ -1,18 +1,18 @@
 package frc.robot
 
-import org.wpilib.command3.Trigger
-import org.wpilib.command3.button.CommandGamepad
 import org.wpilib.math.util.MathUtil.applyDeadband
+import org.wpilib.command2.button.CommandGamepad
+import org.wpilib.command2.button.Trigger
+
 
 /*
-
-     leftstick         [] (back)    = (start)       Y (northFace)
-                                            X (westFace)    B (eastFace)
-                                                    A (southFace)
-                    d-pad               rightstick
+    leftstick          # (back)       = (start)                 Y (northFace)
+                                                        X (westFace)    B (eastFace)
+                  dpad                    rstick                A (southFace)
  */
 
-class Controller : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT) {
+
+class XboxController : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT) {
     private var lerpX = 0.0
     private var lerpY = 0.0
     private var lerpRot = 0.0
@@ -57,7 +57,7 @@ class Controller : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROLLER_
 
     fun deliveryScale(): Double = getLeftTriggerAxis()
 
-    fun heading(): Trigger = this.eastFace()
+    fun heading(): Trigger = this.northFace()
 
     //   fun alignL() : Trigger {
     //      return Trigger { xButton }
@@ -65,7 +65,7 @@ class Controller : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROLLER_
     // fun alignR() : Trigger {
     //   return Trigger { bButton }
     // }
-    fun autoAim(): Trigger = this.westFace()
+    fun autoAim(): Trigger = this.southFace()
 
     fun lerp(
         ref: Double,
@@ -98,7 +98,9 @@ class Controller : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROLLER_
 //        return Trigger { rightBumperButton }
 //    }
 
-    fun north(): Trigger = this.back() // Select Button
+    fun north(): Trigger {
+        return this.back() // Select Button
+    }
 
     fun XLock(): Trigger = this.leftBumper()
 
@@ -108,5 +110,5 @@ class Controller : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROLLER_
 
     fun altIndexer(): Trigger = this.eastFace()
 
-    fun shake(): Trigger = this.westFace()
+    fun shake(): Trigger = this.eastFace()
 }

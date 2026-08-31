@@ -4,7 +4,7 @@ import com.ctre.phoenix6.CANBus
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.hardware.TalonFX
 import frc.robot.Constants.RollerConstants
-import org.wpilib.command3.SubsystemBase
+import org.wpilib.command2.SubsystemBase
 
 object StorageSubsystem : SubsystemBase() {
     private val CAN = CANBus("didy")
@@ -29,8 +29,8 @@ object StorageSubsystem : SubsystemBase() {
     }
 
     fun roll(rollerSpeed: Double) {
-        rollerMotor.set(rollerSpeed)
-        rollerMotor2.set(-rollerSpeed)
+        rollerMotor.throttle = rollerSpeed
+        rollerMotor2.throttle = -rollerSpeed
     }
 
     fun rollerstop() {

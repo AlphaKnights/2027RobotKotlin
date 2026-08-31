@@ -1,8 +1,8 @@
 package frc.robot.commands
 import frc.robot.Constants
 import frc.robot.subsystems.StorageSubsystem
-import org.wpilib.command3.Command
-import org.wpilib.wpilibj.Timer
+import org.wpilib.command2.Command
+import org.wpilib.system.Timer
 
 class StorageCommand(
     reversed: Boolean,

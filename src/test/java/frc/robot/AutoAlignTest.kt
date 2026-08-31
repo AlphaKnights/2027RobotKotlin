@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import org.wpilib.math.geometry.Pose3d
 import org.wpilib.math.geometry.Rotation3d
 import org.wpilib.math.geometry.Translation3d
-import org.wpilib.math.kinematics.ChassisSpeeds
+import org.wpilib.math.kinematics.ChassisVelocities
 
 internal class AutoAlignTest {
     @Test
@@ -20,9 +20,9 @@ internal class AutoAlignTest {
         val result = AutoAlignCalc.getAlignSpeeds(0.0, 1.0, pose)
 
         // Y-speed should be negative (left in WPILib coordinates)
-        assertTrue(result.vxMetersPerSecond < 0.0)
-        assertEquals(0.0, result.vyMetersPerSecond, 0.001)
-        assertEquals(0.0, result.omegaRadiansPerSecond, 0.001)
+        assertTrue(result.vx < 0.0)
+        assertEquals(0.0, result.vy, 0.001)
+        assertEquals(0.0, result.omega, 0.001)
     }
 
     @Test
@@ -32,9 +32,9 @@ internal class AutoAlignTest {
         val result = AutoAlignCalc.getAlignSpeeds(0.0, 0.0, pose)
 
         // X-speed should be positive (forward)
-        assertTrue(result.vxMetersPerSecond > 0.0)
-        assertEquals(0.0, result.vyMetersPerSecond, 0.001)
-        assertEquals(0.0, result.omegaRadiansPerSecond, 0.001)
+        assertTrue(result.vx > 0.0)
+        assertEquals(0.0, result.vy, 0.001)
+        assertEquals(0.0, result.omega, 0.001)
     }
 
     @Test
@@ -44,9 +44,9 @@ internal class AutoAlignTest {
         val result = AutoAlignCalc.getAlignSpeeds(0.0, 0.0, pose)
 
         // Omega should be negative (CCW rotation to align)
-        assertTrue(result.omegaRadiansPerSecond < 0.0)
-        assertEquals(0.0, result.vxMetersPerSecond, 0.001)
-        assertEquals(0.0, result.vyMetersPerSecond, 0.001)
+        assertTrue(result.omega < 0.0)
+        assertEquals(0.0, result.vx, 0.001)
+        assertEquals(0.0, result.vy, 0.001)
     }
 
     @Test
@@ -62,9 +62,9 @@ internal class AutoAlignTest {
             )
 
         val result = AutoAlignCalc.getAlignSpeeds(0.0, 0.0, pose)
-        assertEquals(0.0, result.vxMetersPerSecond, 0.001)
-        assertEquals(0.0, result.vyMetersPerSecond, 0.001)
-        assertEquals(0.0, result.omegaRadiansPerSecond, 0.001)
+        assertEquals(0.0, result.vx, 0.001)
+        assertEquals(0.0, result.vy, 0.001)
+        assertEquals(0.0, result.omega, 0.001)
     }
 
     @Test
@@ -82,8 +82,8 @@ internal class AutoAlignTest {
                     0.0,
                 ),
             )
-        val expectedChassisSpeeds =
-            ChassisSpeeds(0.0, -0.0, -0.0)
+        val expectedChassisVelocities =
+            ChassisVelocities(0.0, -0.0, -0.0)
 
         val result =
             AutoAlignCalc.getAlignSpeeds(
@@ -92,16 +92,16 @@ internal class AutoAlignTest {
                 pose,
             )
         assertEquals(
-            expectedChassisSpeeds.vxMetersPerSecond,
-            result.vxMetersPerSecond,
+            expectedChassisVelocities.vx,
+            result.vx,
         )
         assertEquals(
-            expectedChassisSpeeds.vyMetersPerSecond,
-            result.vyMetersPerSecond,
+            expectedChassisVelocities.vy,
+            result.vy,
         )
         assertEquals(
-            expectedChassisSpeeds.omegaRadiansPerSecond,
-            result.omegaRadiansPerSecond,
+            expectedChassisVelocities.omega,
+            result.omega,
         )
     }
 
@@ -120,8 +120,8 @@ internal class AutoAlignTest {
                     0.0,
                 ),
             )
-        val expectedChassisSpeeds =
-            ChassisSpeeds(0.0, -1.0, -0.0)
+        val expectedChassisVelocities =
+            ChassisVelocities(0.0, -1.0, -0.0)
 
         val result =
             AutoAlignCalc.getAlignSpeeds(
@@ -130,16 +130,16 @@ internal class AutoAlignTest {
                 pose,
             )
         assertEquals(
-            expectedChassisSpeeds.vxMetersPerSecond,
-            result.vxMetersPerSecond,
+            expectedChassisVelocities.vx,
+            result.vx,
         )
         assertEquals(
-            expectedChassisSpeeds.vyMetersPerSecond,
-            result.vyMetersPerSecond,
+            expectedChassisVelocities.vy,
+            result.vy,
         )
         assertEquals(
-            expectedChassisSpeeds.omegaRadiansPerSecond,
-            result.omegaRadiansPerSecond,
+            expectedChassisVelocities.omega,
+            result.omega,
         )
     }
 
@@ -159,8 +159,8 @@ internal class AutoAlignTest {
                 ),
             )
         val offsets = doubleArrayOf(0.0, 0.0)
-        val expectedChassisSpeeds =
-            ChassisSpeeds(1.0, -0.0, -0.0)
+        val expectedChassisVelocities =
+            ChassisVelocities(1.0, -0.0, -0.0)
 
         val result =
             AutoAlignCalc.getAlignSpeeds(
@@ -169,16 +169,16 @@ internal class AutoAlignTest {
                 pose,
             )
         assertEquals(
-            expectedChassisSpeeds.vxMetersPerSecond,
-            result.vxMetersPerSecond,
+            expectedChassisVelocities.vx,
+            result.vx,
         )
         assertEquals(
-            expectedChassisSpeeds.vyMetersPerSecond,
-            result.vyMetersPerSecond,
+            expectedChassisVelocities.vy,
+            result.vy,
         )
         assertEquals(
-            expectedChassisSpeeds.omegaRadiansPerSecond,
-            result.omegaRadiansPerSecond,
+            expectedChassisVelocities.omega,
+            result.omega,
         )
     }
 }

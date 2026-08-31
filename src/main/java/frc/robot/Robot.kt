@@ -6,7 +6,7 @@ package frc.robot
 import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.LimelightSubsystem
 import frc.robot.subsystems.aiming.AimingCalc
-import org.wpilib.command3.Scheduler
+import org.wpilib.command2.CommandScheduler
 import org.wpilib.driverstation.DriverStation
 import org.wpilib.framework.TimedRobot
 import org.wpilib.hardware.hal.HAL
@@ -62,7 +62,7 @@ class Robot : TimedRobot() {
         // commands, running already-scheduled commands, removing finished or interrupted commands,
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
-        Scheduler.getDefault().run()
+        CommandScheduler.getInstance().run()
 
 //        SmartDashboard.putNumber(
 //            "Match Time",
@@ -103,13 +103,13 @@ class Robot : TimedRobot() {
     override fun autonomousInit() {
         // We store the command as a Robot property in the rare event that the selector on the dashboard
         // is modified while the command is running since we need to access it again in teleopInit()
-        Scheduler.getDefault().schedule(RobotContainer.getAutonomousCommand())
+        CommandScheduler.getInstance().schedule(RobotContainer.getAutonomousCommand())
     }
 
     override fun utilityInit() {
         super.utilityInit()
         // Cancels all running commands at the start of test (utility?) mode.
-        Scheduler.getDefault().cancelAll()
+        CommandScheduler.getInstance().cancelAll()
     }
 
 

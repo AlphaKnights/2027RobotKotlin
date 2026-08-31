@@ -2,11 +2,11 @@ package frc.robot.commands
 
 import frc.robot.Constants
 import frc.robot.subsystems.DriveSubsystem
-import org.wpilib.command3.Command
-import org.wpilib.math.MathUtil.clamp
+import org.wpilib.command2.Command
+import java.lang.Math.clamp
 import org.wpilib.math.controller.PIDController
 import org.wpilib.math.geometry.Rotation2d
-import org.wpilib.math.kinematics.ChassisSpeeds
+import org.wpilib.math.kinematics.ChassisVelocities
 import kotlin.math.min
 
 class NorthCommand(
@@ -43,7 +43,7 @@ class NorthCommand(
             ) * Constants.DriveConstants.MAX_ANGULAR_SPEED
 
         DriveSubsystem.drive(
-            ChassisSpeeds(
+            ChassisVelocities(
                 x() *
                     Constants.DriveConstants.MAX_METERS_PER_SECOND,
                 y() *

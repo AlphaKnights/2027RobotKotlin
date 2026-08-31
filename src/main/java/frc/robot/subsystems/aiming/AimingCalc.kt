@@ -4,10 +4,12 @@
 package frc.robot.subsystems.aiming
 
 import frc.robot.Constants.AimingConstants
+import org.wpilib.driverstation.Alliance
 import org.wpilib.math.geometry.Pose2d
 import org.wpilib.math.geometry.Translation2d
-import org.wpilib.math.kinematics.ChassisSpeeds
-import org.wpilib.wpilibj.DriverStation
+import org.wpilib.math.kinematics.ChassisVelocities
+import org.wpilib.driverstation.DriverStation
+import org.wpilib.driverstation.MatchState
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -93,21 +95,11 @@ object AimingCalc {
     // claude starts here beware
     // Returns true when targeting red hub, false for blue.
     // Reads DriverStation at runtime; falls back to the constant if DS hasn't set it.
-    private fun isRedAlliance(): Boolean {
-        val alliance =
-            DriverStation.getAlliance().orElse(
-                if (AimingConstants.DEFAULT_TO_RED_ALLIANCE) {
-                    DriverStation.Alliance.Red
-                } else {
-                    DriverStation.Alliance.Blue
-                },
-            )
-        return alliance == DriverStation.Alliance.Red
-    }
+    val allianceRed = (MatchState.getAlliance().get()) == Alliance.BLUE
 
     // Returns the hub's field position for the current alliance.
     private fun getHubPosition(): Translation2d =
-        if (isRedAlliance()) {
+        if (allianceRed) {
             Translation2d(AimingConstants.RED_HUB_X, AimingConstants.RED_HUB_Y)
         } else {
             Translation2d(AimingConstants.BLUE_HUB_X, AimingConstants.BLUE_HUB_Y)
@@ -126,10 +118,10 @@ object AimingCalc {
     private fun getAngleBounds(): Pair<Double, Double> {
         val minRad = Math.toRadians(AimingConstants.MIN_ANGLE_DEGREES)
         val maxRad = Math.toRadians(AimingConstants.MAX_ANGLE_DEGREES)
-        return if (isRedAlliance()) Pair(minRad, maxRad) else Pair(-maxRad, -minRad)
+        return if (allianceRed) Pair(minRad, maxRad) else Pair(-maxRad, -minRad)
     }
 
-    // Calculates field-relative ChassisSpeeds to keep the robot on the shooting arc.
+    // Calculates field-relative ChassisVelocities to keep the robot on the shooting arc.
     //
     // What this does, in three parts:
     //   1. Radial correction — drives toward/away from the hub to maintain DISTANCE.
@@ -152,15 +144,15 @@ object AimingCalc {
     //
     //   Positive controllerX → CCW movement around the hub.
     //
-    // ChassisSpeeds axes (WPILib field-relative convention):
+    // ChassisVelocities axes (WPILib field-relative convention):
     //   vx → +X on field (toward red alliance wall)
     //   vy → +Y on field
     //   omega → positive = CCW
     fun getArcDriveSpeeds(
         curPose: Pose2d,
         controllerX: Double,
-        currentSpeeds: ChassisSpeeds,
-    ): ChassisSpeeds {
+        currentSpeeds: ChassisVelocities,
+    ): ChassisVelocities {
         val hub = getHubPosition()
         val dx = curPose.x - hub.x // robot_x − hub_x
         val dy = curPose.y - hub.y // robot_y − hub_y
@@ -168,7 +160,7 @@ object AimingCalc {
         val distance = sqrt(distanceSq)
 
         // Guard: robot is exactly at hub centre — no defined direction, stop.
-        if (distance < 0.1) return ChassisSpeeds(0.0, 0.0, 0.0)
+        if (distance < 0.1) return ChassisVelocities(0.0, 0.0, 0.0)
 
         val theta = atan2(dy, dx)
         val cosT = cos(theta)
@@ -227,10 +219,10 @@ object AimingCalc {
         // where vx/vy are the robot's current field-relative velocities.
         val feedforwardOmega =
             (
-                -currentSpeeds.vxMetersPerSecond * dy +
-                    currentSpeeds.vyMetersPerSecond * dx
+                -currentSpeeds.vx * dy +
+                    currentSpeeds.vy * dx
             ) / distanceSq
 
-        return ChassisSpeeds(vx, vy, proportionalOmega + feedforwardOmega)
+        return ChassisVelocities(vx, vy, proportionalOmega + feedforwardOmega)
     }
 }
