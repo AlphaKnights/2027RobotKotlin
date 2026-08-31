@@ -1,5 +1,6 @@
 package frc.robot.subsystems
 
+import com.ctre.phoenix6.CANBus
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.hardware.Pigeon2
 import com.ctre.phoenix6.hardware.TalonFX
@@ -52,10 +53,10 @@ object DriveSubsystem : SubsystemBase() {
             Constants.DriveConstants.REAR_RIGHT_CANCODER_ID,
             Constants.DriveConstants.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET,
         )
-    private var FrontRightEncoder = CANcoder(Constants.DriveConstants.FRONT_RIGHT_CANCODER_ID)
-    private var fL: TalonFX = TalonFX(Constants.DriveConstants.FRONT_LEFT_DRIVING_ID)
+    private var FrontRightEncoder = CANcoder(Constants.DriveConstants.FRONT_RIGHT_CANCODER_ID, Constants.CANBusIDs.DRIVE_CANBUS)
+    private var fL: TalonFX = TalonFX(Constants.DriveConstants.FRONT_LEFT_DRIVING_ID, Constants.CANBusIDs.DRIVE_CANBUS)
 
-    private var gyro: Pigeon2 = Pigeon2(20)
+    private var gyro: Pigeon2 = Pigeon2(20, Constants.CANBusIDs.PIDGEON_CANBUS)
 //    private var gyro: AHRS = AHRS(AHRS.NavXComType.kMXP_SPI)
 
     private var odometry: SwerveDriveOdometry

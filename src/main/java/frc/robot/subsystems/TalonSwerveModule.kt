@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
 import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.NeutralModeValue
+import frc.robot.Constants
 import frc.robot.Constants.ModuleConstants
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.kinematics.SwerveModulePosition
@@ -22,9 +23,9 @@ class TalonSwerveModule(
     encoderId: Int,
     private val offset: Rotation2d,
 ) {
-    private val driveMotor = TalonFX(driveMotorId)
-    private val turnMotor = TalonFX(turnMotorId)
-    private val encoder = CANcoder(encoderId)
+    private val driveMotor = TalonFX(driveMotorId, Constants.CANBusIDs.DRIVE_CANBUS)
+    private val turnMotor = TalonFX(turnMotorId, Constants.CANBusIDs.DRIVE_CANBUS)
+    private val encoder = CANcoder(encoderId, Constants.CANBusIDs.DRIVE_CANBUS)
     private var desiredState =
         SwerveModuleVelocity(
             0.0,

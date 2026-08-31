@@ -7,6 +7,7 @@ package frc.robot
  * `const` definitions. Other constant types should use `val` definitions.
  */
 
+import com.ctre.phoenix6.CANBus
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.geometry.Translation2d
 import org.wpilib.math.kinematics.SwerveDriveKinematics
@@ -232,5 +233,21 @@ object Constants {
         const val ROTATION_P = 17.0
         const val ROTATION_I = 0.0
         const val ROTATION_D = 0.0
+    }
+
+    object CANBusIDs {
+        /*
+        Possible CAN bus strings are:
+            "can_s0" to "can_s24" for the native Systemcore/Motioncore CAN buses
+            CANivore name or serial number
+            SocketCAN interface (non-FRC Linux only)
+            "*" for any CANivore seen by the program
+            empty string (default) to select the default for the system:
+                "can_s1" on Systemcore
+                "can0" on Linux
+                "*" on Windows
+         */
+        val DRIVE_CANBUS: CANBus = CANBus("can_s0")
+        val PIDGEON_CANBUS: CANBus = CANBus("can_s1")
     }
 }
