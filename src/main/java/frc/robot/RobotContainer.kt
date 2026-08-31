@@ -27,7 +27,7 @@ import org.wpilib.wpilibj.GenericHID
  */
 object RobotContainer {
     // private val joystickController = JoystickController()
-    private val xBoxController = XBoxController()
+    private val xBoxController = Controller()
 
     private val buttonBoard = CommandJoystick(Constants.OperatorConstants.BUTTON_BOARD_PORT)
 
