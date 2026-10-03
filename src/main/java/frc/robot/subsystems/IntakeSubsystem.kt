@@ -9,15 +9,6 @@ import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.MotorAlignmentValue
 import com.ctre.phoenix6.signals.NeutralModeValue
-import com.revrobotics.PersistMode
-import com.revrobotics.ResetMode
-import com.revrobotics.spark.FeedbackSensor
-import com.revrobotics.spark.SparkBase
-import com.revrobotics.spark.SparkLowLevel
-import com.revrobotics.spark.SparkMax
-import com.revrobotics.spark.config.ClosedLoopConfig
-import com.revrobotics.spark.config.SparkBaseConfig
-import com.revrobotics.spark.config.SparkMaxConfig
 import frc.robot.Constants
 import org.wpilib.command2.SubsystemBase
 import org.wpilib.hardware.discrete.DigitalInput
@@ -83,9 +74,6 @@ object IntakeSubsystem : SubsystemBase() {
                     InvertedValue.CounterClockwise_Positive
                     NeutralMode = NeutralModeValue.Brake
                 }
-
-                ResetMode.kResetSafeParameters
-                PersistMode.kPersistParameters
 
                 /*encoder.apply {
                     positionConversionFactor(1.0)
