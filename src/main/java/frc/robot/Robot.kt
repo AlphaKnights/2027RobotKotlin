@@ -21,8 +21,8 @@ import org.wpilib.system.WPILibVersion
  * the `Main.kt` file in the project. (If you use the IDE's Rename or Move refactorings when renaming the
  * object or package, it will get changed everywhere.)
  */
-class Robot : TimedRobot() {
-    public val isReallyReal = isReal()
+object Robot : TimedRobot() {
+    val isReallyReal = isReal()
 
     init {
         // Kotlin initializer block, which effectually serves as the constructor code.
