@@ -5,24 +5,16 @@ package frc.robot
 
 import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.commands.PathPlannerAuto
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.GenericHID
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.InstantCommand
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import frc.robot.commands.*
 import frc.robot.commands.DriveToArcCommand
 import frc.robot.commands.autoalign.AutoAlignAutoCommand
-import frc.robot.commands.autoalign.AutoAlignManualCommand
-import frc.robot.commands.intake.IntakeCommand
-import frc.robot.commands.intake.IntakeLeverCommand
-import frc.robot.commands.intake.IntakeLeverManualCommand
+import frc.robot.commands.intake.*
 import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.LimelightSubsystem
-import frc.robot.subsystems.Telemetry
-import java.io.File
+import org.wpilib.command2.Command
+import org.wpilib.command2.InstantCommand
+import org.wpilib.command2.button.CommandJoystick
+import org.wpilib.driverstation.GenericHID
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,7 +29,7 @@ import java.io.File
  */
 object RobotContainer {
     // private val joystickController = JoystickController()
-    private val xBoxController = XBoxController()
+    private val xBoxController = XboxController()
 
     private val buttonBoard = CommandJoystick(Constants.OperatorConstants.BUTTON_BOARD_PORT)
 
@@ -46,7 +38,7 @@ object RobotContainer {
     init {
         LimelightSubsystem.startPolling()
         NamedCommands.registerCommands(
-            mapOf(
+            mapOf<String, Command>(
                 "Left" to AutoAlignAutoCommand(Constants.AlignDirection.LEFT),
                 "Right" to AutoAlignAutoCommand(Constants.AlignDirection.RIGHT),
                 "Delivery" to AutoDeliveryCommand(Constants.LaunchConstants.LAUNCH_SPEED),
@@ -95,7 +87,8 @@ object RobotContainer {
         // ),
         // )
 
-        xBoxController.resetOdometry().whileTrue(
+        xBoxController
+            .resetOdometry().whileTrue(
             ResetOdometry(),
         )
 
@@ -143,24 +136,38 @@ object RobotContainer {
 //                ),
 //            )
 
-        xBoxController.north().whileTrue(
+        xBoxController.north()
+            .whileTrue(
             NorthCommand(
                 x = { xBoxController.x() },
                 y = { xBoxController.y() },
             ),
         )
 
-        xBoxController.xLock().whileTrue(
+        xBoxController.xLock()
+            .whileTrue(
             LockXCommand(),
         )
 
-        xBoxController.altDelivery().whileTrue(
+        xBoxController.altDelivery()
+            .whileTrue(
             DeliveryCommand(Constants.LaunchConstants.ALT_LAUNCH_SPEED),
         )
 
         xBoxController.altIntake().whileTrue(
             IntakeCommand(false),
         )
+        buttonBoard.button(6).multiPress(2, 1.0).toggleOnTrue(
+            InstantCommand({
+                xBoxController.setRumble(GenericHID.RumbleType.LEFT_RUMBLE, 1.0)
+            }),
+        )
+        buttonBoard.button(6).multiPress(2, 1.0).toggleOnFalse(
+            InstantCommand({
+                xBoxController.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 0.0)
+            }),
+        )
+
         buttonBoard.button(7).whileTrue(
             SuperStorageCommand(false),
         )

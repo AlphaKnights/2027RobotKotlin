@@ -11,13 +11,11 @@ import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
 import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.NeutralModeValue
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.kinematics.SwerveModulePosition
-import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.util.sendable.Sendable
-import edu.wpi.first.util.sendable.SendableBuilder
+import frc.robot.Constants
 import frc.robot.Constants.ModuleConstants
-import frc.robot.interfaces.SwerveModule
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.kinematics.SwerveModulePosition
+import org.wpilib.math.kinematics.SwerveModuleVelocity
 
 class SwerveModuleIOTalon(
     driveMotorId: Int,
@@ -26,17 +24,18 @@ class SwerveModuleIOTalon(
     private val offset: Rotation2d,
 ) : SwerveModule,
     Sendable {
-    private val driveMotor = TalonFX(driveMotorId)
-    private val turnMotor = TalonFX(turnMotorId)
-    private val encoder = CANcoder(encoderId)
+    private val driveMotor = TalonFX(driveMotorId, Constants.CANBusIDs.DRIVE_CANBUS)
+    private val turnMotor = TalonFX(turnMotorId, Constants.CANBusIDs.DRIVE_CANBUS)
+    private val encoder = CANcoder(encoderId, Constants.CANBusIDs.DRIVE_CANBUS)
     private var desiredState =
-        SwerveModuleState(
+        SwerveModuleVelocity(
             0.0,
             Rotation2d.fromRotations(
                 encoder.position.valueAsDouble,
             ) +
                 offset,
         )
+
 
     init {
         val driveMotorConfig =
@@ -137,8 +136,8 @@ class SwerveModuleIOTalon(
                 offset,
         )
 
-    override fun getState(): SwerveModuleState =
-        SwerveModuleState(
+    override fun getState(): SwerveModuleVelocity =
+        SwerveModuleVelocity(
             ModuleConstants.WHEEL_CIRCUMFERENCE * driveMotor.velocity.valueAsDouble,
             Rotation2d.fromRotations(
                 turnMotor.position.valueAsDouble,
@@ -146,10 +145,10 @@ class SwerveModuleIOTalon(
                 offset,
         )
 
-    override fun setDesiredState(desiredState: SwerveModuleState) {
+    override fun setDesiredState(desiredState: SwerveModuleVelocity) {
         val correctedState =
-            SwerveModuleState(
-                desiredState.speedMetersPerSecond,
+            SwerveModuleVelocity(
+                desiredState.velocity,
                 desiredState.angle - offset,
             )
         correctedState.optimize(
@@ -160,7 +159,7 @@ class SwerveModuleIOTalon(
 
         driveMotor.setControl(
             VelocityVoltage(
-                correctedState.speedMetersPerSecond / ModuleConstants.WHEEL_CIRCUMFERENCE,
+                correctedState.velocity / ModuleConstants.WHEEL_CIRCUMFERENCE,
             ),
         )
         turnMotor.setControl(

@@ -3,16 +3,16 @@
  */
 package frc.robot
 
-import edu.wpi.first.hal.FRCNetComm.tInstances
-import edu.wpi.first.hal.FRCNetComm.tResourceType
-import edu.wpi.first.hal.HAL
-import edu.wpi.first.wpilibj.DataLogManager
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.TimedRobot
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.util.WPILibVersion
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import frc.robot.subsystems.Telemetry
+import frc.robot.subsystems.DriveSubsystem
+import frc.robot.subsystems.LimelightSubsystem
+import frc.robot.subsystems.aiming.AimingCalc
+import org.wpilib.command2.CommandScheduler
+import org.wpilib.driverstation.DriverStation
+import org.wpilib.framework.TimedRobot
+import org.wpilib.hardware.hal.HAL
+import org.wpilib.system.RobotController
+import org.wpilib.smartdashboard.SmartDashboard
+import org.wpilib.system.WPILibVersion
 
 /**
  * The functions in this object (which basically functions as a singleton class) are called automatically
@@ -24,7 +24,7 @@ import frc.robot.subsystems.Telemetry
  * the `Main.kt` file in the project. (If you use the IDE's Rename or Move refactorings when renaming the
  * object or package, it will get changed everywhere.)
  */
-object Robot : TimedRobot() {
+class Robot : TimedRobot() {
     val isReallyReal = isReal()
 
     init {
@@ -36,9 +36,8 @@ object Robot : TimedRobot() {
 
         // Report the use of the Kotlin Language for "FRC Usage Report" statistics.
         // Please retain this line so that Kotlin's growing use by teams is seen by FRC/WPI.
-        HAL.report(
-            tResourceType.kResourceType_Language,
-            tInstances.kLanguage_Kotlin,
+        HAL.reportUsage(
+            "Kotlin",
             0,
             WPILibVersion.Version,
         )
@@ -73,8 +72,11 @@ object Robot : TimedRobot() {
         CommandScheduler.getInstance().schedule(RobotContainer.getAutonomousCommand())
     }
 
-    override fun testInit() {
-        // Cancels all running commands at the start of test mode.
+    override fun utilityInit() {
+        super.utilityInit()
+        // Cancels all running commands at the start of test (utility?) mode.
         CommandScheduler.getInstance().cancelAll()
     }
+
+
 }

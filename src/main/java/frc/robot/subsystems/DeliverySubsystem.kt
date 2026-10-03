@@ -3,14 +3,12 @@
  */
 package frc.robot.subsystems
 
+import frc.robot.Constants
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
-import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.wpilibj.Ultrasonic
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.robot.Constants
 import frc.robot.Constants.LaunchConstants
+import org.wpilib.command2.SubsystemBase
 
 object DeliverySubsystem : SubsystemBase() {
     /*
@@ -34,7 +32,8 @@ object DeliverySubsystem : SubsystemBase() {
         )
 
     init {
-        Ultrasonic.setAutomaticMode(true)
+        //Ultrasonic.setAutomaticMode(true)
+
         val launchMotorConfig1 =
             TalonFXConfiguration().apply {
                 CurrentLimits.apply {
@@ -118,8 +117,8 @@ object DeliverySubsystem : SubsystemBase() {
     fun forward(launchProp: Double) {
         // leftLaunchMotor.setControl(VelocityVoltage(launchProp))
         // rightLaunchMotor.setControl(VelocityVoltage(launchProp))
-        leftLaunchMotor.set(launchProp)
-        rightLaunchMotor.set(-launchProp)
+        leftLaunchMotor.throttle = launchProp
+        rightLaunchMotor.throttle = -launchProp
     }
 
     fun stop() {

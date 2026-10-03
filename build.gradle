@@ -1,15 +1,22 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id "java"
-    id "org.jetbrains.kotlin.jvm" version "2.1.0"
-    id "edu.wpi.first.GradleRIO" version "2026.2.1"
+    id "org.jetbrains.kotlin.jvm" version "2.4.0"
+    id "org.wpilib.GradleRIO" version "2027.0.0-alpha-6"
     id "idea"
     id "org.jlleitschuh.gradle.ktlint" version "12.2.0"
     id "com.diffplug.spotless" version "7.0.3"
-    id "io.gitlab.arturbosch.detekt" version "1.23.8"
+    id("dev.detekt") version "2.0.0-alpha.5"
+    id "org.jetbrains.kotlin.kapt" version '2.4.0'
 }
 
-def javaVersion = JavaVersion.VERSION_17
-def kotlinJvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.@Companion.fromTarget(javaVersion.toString())
+repositories {
+    mavenCentral()
+}
+
+def javaVersion = JavaVersion.VERSION_25
+def kotlinJvmTarget = JvmTarget.@Companion.fromTarget(javaVersion.toString())
 
 java {
     sourceCompatibility = javaVersion
@@ -22,26 +29,29 @@ def ROBOT_MAIN_CLASS = "frc.robot.Main"
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
     targets {
-        roborio(getTargetTypeClass('RoboRIO')) {
+        systemcore(getTargetTypeClass('SystemCore')) {
             // Team number is loaded either from the .wpilib/wpilib_preferences.json
             // or from command line. If not found an exception will be thrown.
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
             // want to store a team number in this file.
-            team = project.frc.getTeamNumber()
-            debug = project.frc.getDebugOrDefault(false)
+            team = project.wpilib.getTeamNumber()
+            // Use the default systemcore host name. This must be called after setting team
+            // as happens on the line above
+            useDefaultSystemcoreHostName()
+            debug = project.wpilib.getDebugOrDefault(false)
 
             artifacts {
                 // First part is artifact name, 2nd is artifact type
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
-                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+                wpilibJava(getArtifactTypeClass('WPILibJavaArtifact')) {
                 }
 
                 // Static files artifact
-                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                wpilibStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
-                    directory = '/home/lvuser/deploy'
-                    deleteOldFiles = false // Change to true to delete files on roboRIO that no
+                    directory = '/home/systemcore/deploy'
+                    deleteOldFiles = false // Change to true to delete files on systemcore that no
                     // longer exist in deploy directory of this project
                 }
             }
@@ -49,25 +59,25 @@ deploy {
     }
 }
 
-def deployArtifact = deploy.targets.roborio.artifacts.frcJava
+def deployArtifact = deploy.targets.systemcore.artifacts.wpilibJava
 
 // Set to true to use debug for JNI.
 wpi.java.debugJni = false
 
 // Set this to true to enable desktop support.
 //noinspection GroovyUnusedAssignment
-def includeDesktopSupport = true
+def includeDesktopSupport = false
 
 dependencies {
     annotationProcessor wpi.java.deps.wpilibAnnotations()
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
-    roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
-    roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
+    systemcoreDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.systemcore)
+    systemcoreDebug wpi.java.vendor.jniDebug(wpi.platforms.systemcore)
 
-    roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
-    roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
+    systemcoreRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.systemcore)
+    systemcoreRelease wpi.java.vendor.jniRelease(wpi.platforms.systemcore)
 
     nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
     nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
@@ -86,6 +96,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1"
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
+
+    // Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.2")
 }
 
 test{
@@ -103,7 +116,7 @@ wpi.sim.addDriverstation()
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     from sourceSets.main.allSource
-    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+    manifest org.wpilib.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
@@ -119,6 +132,7 @@ tasks.withType(JavaCompile) {
 
 kotlin {
     compilerOptions {
+
         jvmTarget.set(kotlinJvmTarget)
         // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
         jvmToolchain(Integer.valueOf(javaVersion.toString()))
@@ -143,15 +157,7 @@ idea {
 spotless {
     kotlin {
         target "src/**/*.kt"
-        ktlint()
-        suppressLintsFor {
-            step = "ktlint"
-            shortCode = "standard:no-wildcard-imports"
-        }
-        suppressLintsFor {
-            step = "ktlint"
-            shortCode - "standard:value-argument-comment"
-        }
+        ktlint()  // Use ktlint for formatting
         trimTrailingWhitespace()
         endWithNewline()
         licenseHeader(
@@ -161,6 +167,10 @@ spotless {
         )
     }
 }
-repositories {
-    mavenCentral()
+
+detekt {
+    buildUponDefaultConfig = true // preconfigure defaults
+    allRules = true // do not activate every rule by default
+    // config.setFrom("config/detekt/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
+    baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
 }

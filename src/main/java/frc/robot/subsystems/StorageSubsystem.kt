@@ -5,10 +5,8 @@ package frc.robot.subsystems
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.hardware.TalonFX
-import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.robot.Constants
 import frc.robot.Constants.RollerConstants
+import org.wpilib.command2.SubsystemBase
 
 object StorageSubsystem : SubsystemBase() {
     private val CAN = Constants.ModuleConstants.CANBUS
@@ -43,8 +41,8 @@ object StorageSubsystem : SubsystemBase() {
     }
 
     fun roll(rollerSpeed: Double) {
-        rollerMotor.set(rollerSpeed)
-        rollerMotor2.set(-rollerSpeed)
+        rollerMotor.throttle = rollerSpeed
+        rollerMotor2.throttle = -rollerSpeed
     }
 
     fun rollerstop() {

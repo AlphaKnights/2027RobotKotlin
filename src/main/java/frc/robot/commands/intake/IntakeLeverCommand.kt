@@ -3,8 +3,8 @@
  */
 package frc.robot.commands.intake
 
-import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.IntakeSubsystem
+import org.wpilib.command2.Command
 
 class IntakeLeverCommand(
     private val targetPosition: Double,

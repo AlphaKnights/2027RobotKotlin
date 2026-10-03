@@ -16,13 +16,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.revrobotics.PersistMode
 import com.revrobotics.ResetMode
 import com.revrobotics.spark.config.ClosedLoopConfig
-import edu.wpi.first.networktables.NTSendable
-import edu.wpi.first.networktables.NTSendableBuilder
-import edu.wpi.first.util.sendable.Sendable
-import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.wpilibj2.command.SubsystemBase
+import com.revrobotics.spark.config.SparkBaseConfig
+import com.revrobotics.spark.config.SparkMaxConfig
 import frc.robot.Constants
-import java.util.function.DoubleConsumer
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.hardware.discrete.DigitalInput
 
 object IntakeSubsystem : SubsystemBase() {
     private val CAN = Constants.ModuleConstants.CANBUS
@@ -173,7 +171,7 @@ object IntakeSubsystem : SubsystemBase() {
     }
 
     fun runIntake(speed: Double) {
-        intakeMotor.set(-speed)
+        intakeMotor.throttle = -speed
     }
 
     fun setPosition(position: Double) {
@@ -186,8 +184,8 @@ object IntakeSubsystem : SubsystemBase() {
     fun isInPosition(deadzone: Double): Boolean = (rightleverMotor.closedLoopError.valueAsDouble < deadzone)
 
     fun moveLever(speed: Double) {
-        rightleverMotor.set(speed)
-        leftLeverMotor.set(-speed)
+        rightleverMotor.throttle = speed
+        leftLeverMotor.throttle -speed
     }
 
     fun getPosition(): Double = rightleverMotor.position.valueAsDouble

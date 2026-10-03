@@ -3,13 +3,15 @@
  */
 package frc.robot.commands
 
-import edu.wpi.first.math.MathUtil.clamp
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.Constants.DriveConstants
+import frc.robot.Constants
 import frc.robot.subsystems.DriveSubsystem
+import org.wpilib.command2.Command
+import org.wpilib.command2.WrapperCommand
+import org.wpilib.math.controller.PIDController
+import org.wpilib.math.geometry.Pose2d
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.kinematics.ChassisVelocities
+import java.lang.Math.clamp
 
 class DriveSetPointCommand(
     private val x: Double,
@@ -51,6 +53,7 @@ class DriveSetPointCommand(
 //            else -> 0.0
 //        }
 
+        // calculate rotational speed using PID controller, making sure max speed is respected
         val rotSpeed =
             clamp(
                 rotateController.calculate(curpose.rotation.radians, angle),
@@ -73,7 +76,7 @@ class DriveSetPointCommand(
             ) * DriveConstants.MAX_METERS_PER_SECOND
 
         DriveSubsystem.drive(
-            ChassisSpeeds(
+            ChassisVelocities(
                 driveSpeedX,
                 driveSpeedY,
                 rotSpeed,

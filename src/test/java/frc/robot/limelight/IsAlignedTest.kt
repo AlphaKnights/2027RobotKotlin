@@ -3,13 +3,13 @@
  */
 package frc.robot.limelight
 
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Rotation3d
 import frc.robot.Constants.AlignConstants
 import frc.robot.subsystems.LimelightSubsystem
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.wpilib.math.geometry.Pose3d
+import org.wpilib.math.geometry.Rotation3d
 
 internal class IsAlignedTest {
     @Test

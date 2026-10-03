@@ -3,12 +3,14 @@
  */
 package frc.robot.commands
 
-import edu.wpi.first.math.MathUtil.clamp
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.Constants.DriveConstants
+import frc.robot.Constants
 import frc.robot.subsystems.DriveSubsystem
+import org.wpilib.command2.Command
+import java.lang.Math.clamp
+import org.wpilib.math.controller.PIDController
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.kinematics.ChassisVelocities
+import kotlin.math.min
 
 class NorthCommand(
     private val x: () -> Double,
@@ -39,7 +41,6 @@ class NorthCommand(
         // set PID deadzones and angle wrapping
         rotateController.setTolerance(DriveConstants.ROTATE_SETPOINT_TOLERANCE)
         rotateController.enableContinuousInput(-Math.PI, Math.PI)
-
         // calculate rotational speed using PID controller, making sure max speed is respected
         val rotSpeed =
             clamp(
@@ -49,7 +50,7 @@ class NorthCommand(
             ) * DriveConstants.MAX_ANGULAR_SPEED
 
         DriveSubsystem.drive(
-            ChassisSpeeds(
+            ChassisVelocities(
                 x() *
                     DriveConstants.MAX_METERS_PER_SECOND,
                 y() *

@@ -3,14 +3,14 @@
  */
 package frc.robot.commands.autoalign
 
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Constants
 import frc.robot.subsystems.AutoAlignCalc
 import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.LimelightSubsystem
+import org.wpilib.command2.Command
+import org.wpilib.math.geometry.Pose3d
+import org.wpilib.math.kinematics.ChassisVelocities
+import org.wpilib.system.Timer
 
 class AutoAlignAutoCommand(
     private val direction: Constants.AlignDirection,
@@ -56,9 +56,9 @@ class AutoAlignAutoCommand(
             )
 
         if (
-            speeds.vxMetersPerSecond == 0.0 &&
-            speeds.vyMetersPerSecond == 0.0 &&
-            speeds.omegaRadiansPerSecond == 0.0
+            speeds.vx == 0.0 &&
+            speeds.vy == 0.0 &&
+            speeds.omega == 0.0
         ) {
             DriveSubsystem.setX()
             return
@@ -88,7 +88,7 @@ class AutoAlignAutoCommand(
             ) {
                 DriveSubsystem.drive(
                     speeds =
-                        ChassisSpeeds(
+                        ChassisVelocities(
                             0.0,
                             0.0,
                             Constants.AlignConstants.MAX_SPEED,

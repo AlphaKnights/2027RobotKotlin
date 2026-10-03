@@ -3,7 +3,6 @@
  */
 package frc.robot.limelight
 
-import edu.wpi.first.math.geometry.Pose3d
 import frc.robot.interfaces.LimelightService
 import frc.robot.subsystems.LimelightSubsystem
 import kotlinx.coroutines.CoroutineScope
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.whenever
+import org.wpilib.math.geometry.Pose3d
 
 @Suppress("LongMethod")
 internal class LimelightTest {

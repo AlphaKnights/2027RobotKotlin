@@ -3,7 +3,7 @@
  */
 package frc.robot.interfaces
 
-import edu.wpi.first.math.geometry.Pose3d
+import org.wpilib.math.geometry.Pose3d
 
 interface PoseProvider {
     val tagPose: Pose3d?

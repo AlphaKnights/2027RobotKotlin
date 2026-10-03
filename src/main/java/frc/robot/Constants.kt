@@ -11,11 +11,10 @@ package frc.robot
  */
 
 import com.ctre.phoenix6.CANBus
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics
-import edu.wpi.first.math.util.Units
-import edu.wpi.first.wpilibj.RobotBase
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.geometry.Translation2d
+import org.wpilib.math.kinematics.SwerveDriveKinematics
+import org.wpilib.math.util.Units
 import kotlin.math.PI
 
 object Constants {
@@ -104,8 +103,8 @@ object Constants {
         val FRONT_LEFT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.831299)
         val FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.113525 + 0.5)
         val BACK_LEFT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(-0.170166) // + is clockwise
-        val BACK_RIGHT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.002686 + 0.5)
-        // - counter-clockwise
+        val BACK_RIGHT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.002686 + 0.5) // - counter-clockwise
+
         //   back right - > front left
         //   back left - >front right
         //   front left -> back right
@@ -267,4 +266,23 @@ object Constants {
 
         val FIELD_SIZE = Translation2d(16.54099, 8.069326) // get from /deploy/pathplanner/navgrid.json
     }
+
+    object CANBusIDs {
+        /*
+        Possible CAN bus strings are:
+            "can_s0" to "can_s24" for the native Systemcore/Motioncore CAN buses
+            CANivore name or serial number
+            SocketCAN interface (non-FRC Linux only)
+            "*" for any CANivore seen by the program
+            empty string (default) to select the default for the system:
+                "can_s1" on Systemcore
+                "can0" on Linux
+                "*" on Windows
+         */
+        val DRIVE_CANBUS: CANBus = CANBus("can_s0")
+        val PIDGEON_CANBUS: CANBus = CANBus("can_s1")
+    }
 }
+
+
+
