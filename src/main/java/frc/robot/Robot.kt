@@ -3,15 +3,12 @@
  */
 package frc.robot
 
-import frc.robot.subsystems.DriveSubsystem
-import frc.robot.subsystems.LimelightSubsystem
-import frc.robot.subsystems.aiming.AimingCalc
 import org.wpilib.command2.CommandScheduler
 import org.wpilib.driverstation.DriverStation
 import org.wpilib.framework.TimedRobot
 import org.wpilib.hardware.hal.HAL
-import org.wpilib.system.RobotController
 import org.wpilib.smartdashboard.SmartDashboard
+import org.wpilib.system.DataLogManager
 import org.wpilib.system.WPILibVersion
 
 /**
@@ -25,7 +22,7 @@ import org.wpilib.system.WPILibVersion
  * object or package, it will get changed everywhere.)
  */
 class Robot : TimedRobot() {
-    val isReallyReal = isReal()
+    public val isReallyReal = isReal()
 
     init {
         // Kotlin initializer block, which effectually serves as the constructor code.

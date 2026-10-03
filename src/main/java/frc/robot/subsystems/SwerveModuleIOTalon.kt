@@ -13,17 +13,19 @@ import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import frc.robot.Constants
 import frc.robot.Constants.ModuleConstants
+import frc.robot.interfaces.SwerveModule
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.kinematics.SwerveModulePosition
 import org.wpilib.math.kinematics.SwerveModuleVelocity
+import org.wpilib.util.sendable.Sendable
+import org.wpilib.util.sendable.SendableBuilder
 
 class SwerveModuleIOTalon(
     driveMotorId: Int,
     turnMotorId: Int,
     encoderId: Int,
     private val offset: Rotation2d,
-) : SwerveModule,
-    Sendable {
+) : SwerveModule, Sendable {
     private val driveMotor = TalonFX(driveMotorId, Constants.CANBusIDs.DRIVE_CANBUS)
     private val turnMotor = TalonFX(turnMotorId, Constants.CANBusIDs.DRIVE_CANBUS)
     private val encoder = CANcoder(encoderId, Constants.CANBusIDs.DRIVE_CANBUS)
@@ -120,8 +122,8 @@ class SwerveModuleIOTalon(
                 }
             }
 
-        driveMotor.getConfigurator().apply(driveMotorConfig)
-        turnMotor.getConfigurator().apply(turnMotorConfig)
+        driveMotor.configurator.apply(driveMotorConfig)
+        turnMotor.configurator.apply(turnMotorConfig)
 
         driveMotor.setPosition(0.0)
     }

@@ -9,21 +9,14 @@ import org.wpilib.math.geometry.Pose2d
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.geometry.Translation2d
 import org.wpilib.driverstation.Alliance
-import org.wpilib.driverstation.MatchState
+import org.wpilib.driverstation.MatchState.getAlliance
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 object DriveToArcPoseGenerator {
     fun generatePath(curpose: Pose2d = DriveSubsystem.getPose()): Pose2d {
-        val allianceRed =
-            try {
-                (DriverStation.getAlliance().get() ?: DriverStation.Alliance.Red) == DriverStation.Alliance.Red
-            } catch (
-                e: java.util.NoSuchElementException,
-            ) {
-                true
-            }
+        val allianceRed = (getAlliance().get() == Alliance.RED)
         val hubPos =
             if (allianceRed) {
                 Translation2d(AimingConstants.RED_HUB_X, AimingConstants.RED_HUB_Y)

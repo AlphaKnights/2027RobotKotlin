@@ -11,6 +11,8 @@ package frc.robot
  */
 
 import com.ctre.phoenix6.CANBus
+import org.wpilib.driverstation.Alliance
+import org.wpilib.driverstation.MatchState
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.geometry.Translation2d
 import org.wpilib.math.kinematics.SwerveDriveKinematics
@@ -74,14 +76,6 @@ object Constants {
         OUT,
     }
 
-    object SomeConstants {
-        val isReal: Boolean = RobotBase.isReal()
-
-        enum class SwerveType {
-            TALON,
-            SPARKMAX,
-        }
-    }
 
     object DriveConstants {
         const val MAX_METERS_PER_SECOND = 2.0
@@ -281,6 +275,10 @@ object Constants {
          */
         val DRIVE_CANBUS: CANBus = CANBus("can_s0")
         val PIDGEON_CANBUS: CANBus = CANBus("can_s1")
+    }
+
+    object MatchConstants {
+        val allianceRed = (MatchState.getAlliance().get()) == Alliance.BLUE
     }
 }
 

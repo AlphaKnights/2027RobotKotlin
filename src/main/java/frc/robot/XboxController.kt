@@ -53,9 +53,9 @@ class XboxController : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
         return lerpRot
     }
 
-    fun speedScale(): Double = ((-getRightTriggerAxis() + 1))
+    fun speedScale(): Double = ((-rightTriggerAxis + 1))
 
-    fun deliveryScale(): Double = getLeftTriggerAxis()
+    fun deliveryScale(): Double = leftTriggerAxis
 
     fun heading(): Trigger = this.northFace()
 
@@ -102,7 +102,7 @@ class XboxController : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
         return this.back() // Select Button
     }
 
-    fun XLock(): Trigger = this.leftBumper()
+    fun xLock(): Trigger = this.leftBumper()
 
     fun altDelivery(): Trigger = this.southFace()
 

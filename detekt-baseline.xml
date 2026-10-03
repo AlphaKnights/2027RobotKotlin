@@ -45,9 +45,9 @@
     <ID>UnusedPrivateProperty:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private val drivingVelocityFeedForward = ModuleConstants.DRIVING_FF</ID>
     <ID>UnusedPrivateProperty:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private val turningConfig: SparkMaxConfig = SparkMaxConfig()</ID>
     <ID>UnusedPrivateProperty:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private val turningFactor = 2 * PI</ID>
-    <ID>VariableNaming:DriveSubsystem.kt$PhysicsSimDriveSubsystem$private var m_speeds: ChassisSpeeds = ChassisSpeeds()</ID>
+    <ID>VariableNaming:DriveSubsystem.kt$PhysicsSimDriveSubsystem$private var m_speeds: ChassisVelocities = ChassisVelocities()</ID>
     <ID>VariableNaming:DriveSubsystem.kt$SimpleSimDriveSubsystem$var m_pose: Pose2d = Pose2d.kZero</ID>
-    <ID>VariableNaming:DriveSubsystem.kt$SimpleSimDriveSubsystem$var m_speeds: ChassisSpeeds = ChassisSpeeds()</ID>
+    <ID>VariableNaming:DriveSubsystem.kt$SimpleSimDriveSubsystem$var m_speeds: ChassisVelocities = ChassisVelocities()</ID>
     <ID>VariableNaming:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private val m_drivingClosedLoopController: SparkClosedLoopController = m_drivingSpark.getClosedLoopController()</ID>
     <ID>VariableNaming:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private val m_drivingEncoder: RelativeEncoder = m_drivingSpark.encoder</ID>
     <ID>VariableNaming:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private val m_drivingSpark = SparkFlex(drivingCANId, SparkLowLevel.MotorType.kBrushless)</ID>
@@ -55,7 +55,7 @@
     <ID>VariableNaming:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private val m_turningEncoder: AbsoluteEncoder = m_turningSpark.absoluteEncoder</ID>
     <ID>VariableNaming:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private val m_turningSpark = SparkMax(turningCANId, SparkLowLevel.MotorType.kBrushless)</ID>
     <ID>VariableNaming:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private var m_chassisAngularOffset = 0.0</ID>
-    <ID>VariableNaming:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private var m_desiredState = SwerveModuleState(0.0, Rotation2d())</ID>
+    <ID>VariableNaming:SwerveModuleIOSparkMAX.kt$SwerveModuleIOSparkMAX$private var m_desiredState = SwerveModuleVelocity(0.0, Rotation2d())</ID>
     <ID>VariableNaming:SwerveModuleSim.kt$SwerveModuleSim$private val DRIVE_GEARBOX: DCMotor = DCMotor.getKrakenX60Foc(1)</ID>
     <ID>VariableNaming:SwerveModuleSim.kt$SwerveModuleSim$private val TURN_GEARBOX: DCMotor = DCMotor.getKrakenX60Foc(1)</ID>
     <ID>WildcardImport:AimingCalc.kt$import kotlin.math.*</ID>

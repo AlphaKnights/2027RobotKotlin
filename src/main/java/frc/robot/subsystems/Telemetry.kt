@@ -3,23 +3,24 @@
  */
 package frc.robot.subsystems
 
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.networktables.NetworkTableInstance
-import edu.wpi.first.networktables.StructArrayPublisher
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotController
-import edu.wpi.first.wpilibj.RobotState
-import edu.wpi.first.wpilibj.smartdashboard.Field2d
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.Constants
 import frc.robot.subsystems.aiming.AimingCalc
 import frc.robot.subsystems.aiming.DriveToArcPoseGenerator
+import org.wpilib.command2.Command
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.driverstation.DriverStation
+import org.wpilib.driverstation.MatchState
+import org.wpilib.math.controller.PIDController
+import org.wpilib.math.geometry.Pose2d
+import org.wpilib.math.geometry.Pose3d
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.geometry.Translation2d
+import org.wpilib.math.kinematics.SwerveModuleVelocity
+import org.wpilib.networktables.NetworkTableInstance
+import org.wpilib.networktables.StructArrayPublisher
+import org.wpilib.smartdashboard.Field2d
+import org.wpilib.smartdashboard.SmartDashboard
+import org.wpilib.system.RobotController
 
 /**
 Only use Logger for telemetry, not inputs or choosers!
@@ -28,9 +29,9 @@ object Telemetry : SubsystemBase() {
     private val table = NetworkTableInstance.getDefault()
     private val field = Field2d()
 
-    private val swervePublisher: StructArrayPublisher<SwerveModuleState?> =
+    private val swervePublisher: StructArrayPublisher<SwerveModuleVelocity?> =
         table
-            .getStructArrayTopic("MyStates", SwerveModuleState.struct)
+            .getStructArrayTopic("MyStates", SwerveModuleVelocity.struct)
             .publish()
     private val limeLightPublisher: StructArrayPublisher<Pose3d?> =
         table
@@ -45,15 +46,14 @@ object Telemetry : SubsystemBase() {
         SmartDashboard.putData("drive", DriveSubsystem)
 
         SmartDashboard.putNumber(
-            "Match Time",
-            DriverStation.getMatchTime(),
+            "Match Time", MatchState.getMatchTime(),
         )
 
         SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage())
 
         SmartDashboard.putNumber(
             "CAN Utilization",
-            RobotController.getCANStatus().percentBusUtilization * 100,
+            Constants.CANBusIDs.DRIVE_CANBUS.status.BusUtilization.toDouble() * 100
         )
         SmartDashboard.putBoolean(
             "Tag Detected",

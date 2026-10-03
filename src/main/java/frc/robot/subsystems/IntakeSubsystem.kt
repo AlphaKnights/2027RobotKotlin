@@ -21,6 +21,7 @@ import com.revrobotics.spark.config.SparkMaxConfig
 import frc.robot.Constants
 import org.wpilib.command2.SubsystemBase
 import org.wpilib.hardware.discrete.DigitalInput
+import org.wpilib.util.sendable.SendableBuilder
 
 object IntakeSubsystem : SubsystemBase() {
     private val CAN = Constants.ModuleConstants.CANBUS
@@ -116,10 +117,10 @@ object IntakeSubsystem : SubsystemBase() {
 
     override fun initSendable(builder: SendableBuilder) {
         builder.apply {
-            setSafeState {
-                rightleverMotor.disable()
-                intakeMotor.disable()
-            }
+//            setSafeState {
+//                rightleverMotor.disable()
+//                intakeMotor.disable()
+//            }
             addDoubleProperty("position", ::getPosition, ::setPosition)
             addDoubleProperty("lever motor voltage", { rightleverMotor.motorVoltage.valueAsDouble }, null)
             addDoubleProperty("lever stator current", { rightleverMotor.statorCurrent.valueAsDouble }, null)

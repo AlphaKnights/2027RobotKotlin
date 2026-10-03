@@ -225,7 +225,7 @@ object AimingCalc {
                 -currentSpeeds.vx * dy +
                     currentSpeeds.vy * dx
             ) / distanceSq
-            (-currentSpeeds.vxMetersPerSecond * dy + currentSpeeds.vyMetersPerSecond * dx) / distanceSq
+            (-currentSpeeds.vx * dy + currentSpeeds.vy * dx) / distanceSq
 
         return ChassisVelocities(vx, vy, proportionalOmega + feedforwardOmega)
     }

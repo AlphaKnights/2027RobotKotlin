@@ -6,15 +6,18 @@ package frc.robot
 import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.commands.PathPlannerAuto
 import frc.robot.commands.*
-import frc.robot.commands.DriveToArcCommand
 import frc.robot.commands.autoalign.AutoAlignAutoCommand
 import frc.robot.commands.intake.*
 import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.LimelightSubsystem
+import frc.robot.subsystems.Telemetry
 import org.wpilib.command2.Command
 import org.wpilib.command2.InstantCommand
 import org.wpilib.command2.button.CommandJoystick
 import org.wpilib.driverstation.GenericHID
+import org.wpilib.smartdashboard.SendableChooser
+import org.wpilib.smartdashboard.SmartDashboard
+import java.io.File
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -29,7 +32,7 @@ import org.wpilib.driverstation.GenericHID
  */
 object RobotContainer {
     // private val joystickController = JoystickController()
-    private val xBoxController = XboxController()
+    private val XboxController = XboxController()
 
     private val buttonBoard = CommandJoystick(Constants.OperatorConstants.BUTTON_BOARD_PORT)
 
@@ -62,9 +65,9 @@ object RobotContainer {
         // x is forward
         DriveSubsystem.defaultCommand =
             DriveCommand(
-                x = { xBoxController.x() },
-                y = { xBoxController.y() },
-                rot = { xBoxController.rot() },
+                x = { XboxController.x() },
+                y = { XboxController.y() },
+                rot = { XboxController.rot() },
                 autoAngle = {
                     // xBoxController.autoAim().asBoolean
                     false
@@ -72,7 +75,7 @@ object RobotContainer {
             )
 
         // Reset heading
-        xBoxController.heading().whileTrue(
+        XboxController.heading().whileTrue(
             ResetHeadingCommand(),
         )
         // Auto Align
@@ -87,12 +90,12 @@ object RobotContainer {
         // ),
         // )
 
-        xBoxController
+        XboxController
             .resetOdometry().whileTrue(
             ResetOdometry(),
         )
 
-        xBoxController
+        XboxController
             .driveToArc()
             .onTrue(DriveToArcCommand())
 
@@ -136,35 +139,35 @@ object RobotContainer {
 //                ),
 //            )
 
-        xBoxController.north()
+        XboxController.north()
             .whileTrue(
             NorthCommand(
-                x = { xBoxController.x() },
-                y = { xBoxController.y() },
+                x = { XboxController.x() },
+                y = { XboxController.y() },
             ),
         )
 
-        xBoxController.xLock()
+        XboxController.xLock()
             .whileTrue(
             LockXCommand(),
         )
 
-        xBoxController.altDelivery()
+        XboxController.altDelivery()
             .whileTrue(
             DeliveryCommand(Constants.LaunchConstants.ALT_LAUNCH_SPEED),
         )
 
-        xBoxController.altIntake().whileTrue(
+        XboxController.altIntake().whileTrue(
             IntakeCommand(false),
         )
         buttonBoard.button(6).multiPress(2, 1.0).toggleOnTrue(
             InstantCommand({
-                xBoxController.setRumble(GenericHID.RumbleType.LEFT_RUMBLE, 1.0)
+                XboxController.setRumble(GenericHID.RumbleType.LEFT_RUMBLE, 1.0)
             }),
         )
         buttonBoard.button(6).multiPress(2, 1.0).toggleOnFalse(
             InstantCommand({
-                xBoxController.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 0.0)
+                XboxController.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 0.0)
             }),
         )
 
@@ -183,8 +186,8 @@ object RobotContainer {
         buttonBoard.button(Constants.OperatorConstants.DELIVERY_BUTTON).whileTrue(
             DeliveryCommand(Constants.LaunchConstants.LAUNCH_SPEED),
         )
-        if (xBoxController.deliveryScale() >= 0.5) { // Yo what fucking dumbass made this
-            DeliveryCommand(xBoxController.deliveryScale())
+        if (XboxController.deliveryScale() >= 0.5) { // Yo what fucking dumbass made this
+            DeliveryCommand(XboxController.deliveryScale())
         }
         buttonBoard.button(Constants.OperatorConstants.DELIVERY_REVERSE_BUTTON).whileTrue(
             DeliveryCommand(-Constants.LaunchConstants.LAUNCH_SPEED),
@@ -219,12 +222,12 @@ object RobotContainer {
 
         buttonBoard.button(6).multiPress(2, 1.0).toggleOnTrue(
             InstantCommand({
-                xBoxController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0)
+                XboxController.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 1.0)
             }),
         )
         buttonBoard.button(6).multiPress(2, 1.0).toggleOnFalse(
             InstantCommand({
-                xBoxController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
+                XboxController.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 0.0)
             }),
         )
 

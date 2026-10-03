@@ -3,7 +3,7 @@
  */
 package frc.robot.commands
 
-import frc.robot.Constants
+import frc.robot.Constants.DriveConstants
 import frc.robot.subsystems.DriveSubsystem
 import org.wpilib.command2.Command
 import org.wpilib.command2.WrapperCommand

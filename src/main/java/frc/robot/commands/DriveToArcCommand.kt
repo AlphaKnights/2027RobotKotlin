@@ -7,6 +7,10 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Constants
 import frc.robot.subsystems.DriveSubsystem
+import org.wpilib.command2.Command
+import org.wpilib.math.geometry.Pose2d
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.geometry.Translation2d
 import java.util.NoSuchElementException
 import kotlin.math.atan2
 import kotlin.math.pow
@@ -18,10 +22,7 @@ class DriveToArcCommand : Command() {
     fun generatePose(): Pose2d {
         val curpose = DriveSubsystem.getPose()
 
-        val allianceRed = (
-            DriverStation.getAlliance().isPresent &&
-                DriverStation.getAlliance().get() == DriverStation.Alliance.Red
-        )
+        val allianceRed = Constants.MatchConstants.allianceRed
 
         val hubPos =
             if (allianceRed) {
