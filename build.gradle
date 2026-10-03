@@ -2,8 +2,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id "java"
+    id "application"
     id "org.jetbrains.kotlin.jvm" version "2.4.0"
-    id "org.wpilib.GradleRIO" version "2027.0.0-alpha-6"
+    id "org.wpilib.GradleRIO" version "2027.0.0-alpha-7"
     id "idea"
     id "org.jlleitschuh.gradle.ktlint" version "12.2.0"
     id "com.diffplug.spotless" version "7.0.3"
@@ -25,7 +26,7 @@ java {
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
-// Define my targets (RoboRIO) and artifacts (deployable files)
+// Define my targets (SystemCore) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
     targets {
@@ -45,6 +46,8 @@ deploy {
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
                 wpilibJava(getArtifactTypeClass('WPILibJavaArtifact')) {
+                    // Set to true to use debug including JNI, which will drastically impact performance.
+                    debugJni = false
                 }
 
                 // Static files artifact
@@ -61,13 +64,15 @@ deploy {
 
 def deployArtifact = deploy.targets.systemcore.artifacts.wpilibJava
 
-// Set to true to use debug for JNI.
-wpi.java.debugJni = false
+// Set to true to use debug for simulation including JNI
+wpi.java.runSimWithDebugJni = false
 
 // Set this to true to enable desktop support.
 //noinspection GroovyUnusedAssignment
 def includeDesktopSupport = false
 
+// Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
+// Also defines JUnit 5.
 dependencies {
     annotationProcessor wpi.java.deps.wpilibAnnotations()
     implementation wpi.java.deps.wpilib()
@@ -101,7 +106,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.22.2")
 }
 
-test{
+test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
@@ -110,23 +115,20 @@ test{
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
-// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
-// in order to make them all available at runtime. Also adding the manifest so WPILib
-// knows where to look for our Robot Class.
-jar {
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-    from sourceSets.main.allSource
-    manifest org.wpilib.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
+application.mainClass = ROBOT_MAIN_CLASS
 
-// Configure jar and deploy tasks
-deployArtifact.jarTask = jar
-wpi.java.configureExecutableTasks(jar)
+deployArtifact.configureApplication(application)
+wpi.java.configureApplication(application)
 wpi.java.configureTestTasks(test)
 
+jar {
+    from('src') { into 'backup/src' }
+    from('vendordeps') { into 'backup/vendordeps' }
+    from('build.gradle') { into 'backup' }
+}
+
+// Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
-    // Configure string concat to always inline compile
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 

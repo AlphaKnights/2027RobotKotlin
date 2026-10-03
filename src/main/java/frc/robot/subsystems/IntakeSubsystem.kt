@@ -13,11 +13,6 @@ import com.ctre.phoenix6.signals.GainSchedBehaviorValue
 import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.MotorAlignmentValue
 import com.ctre.phoenix6.signals.NeutralModeValue
-import com.revrobotics.PersistMode
-import com.revrobotics.ResetMode
-import com.revrobotics.spark.config.ClosedLoopConfig
-import com.revrobotics.spark.config.SparkBaseConfig
-import com.revrobotics.spark.config.SparkMaxConfig
 import frc.robot.Constants
 import org.wpilib.command2.SubsystemBase
 import org.wpilib.hardware.discrete.DigitalInput
@@ -72,13 +67,10 @@ object IntakeSubsystem : SubsystemBase() {
                 NeutralMode = NeutralModeValue.Brake
             }
 
-            ResetMode.kResetSafeParameters
-            PersistMode.kPersistParameters
-
-            /*encoder.apply {
-                positionConversionFactor(1.0)
-                velocityConversionFactor(1.0)
-            }
+                /*encoder.apply {
+                    positionConversionFactor(1.0)
+                    velocityConversionFactor(1.0)
+                }
 
             closedLoop.apply {
                 feedbackSensor(
