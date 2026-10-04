@@ -3,13 +3,7 @@ package frc.robot
 import org.wpilib.math.util.MathUtil.applyDeadband
 import org.wpilib.command2.button.CommandGamepad
 import org.wpilib.command2.button.Trigger
-
-
-/*
-    leftstick          # (back)       = (start)                 Y (northFace)
-                                                        X (westFace)    B (eastFace)
-                  dpad                    rstick                A (southFace)
- */
+import org.wpilib.math.util.MathUtil.lerp
 
 
 class XboxController : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT) {
@@ -20,11 +14,12 @@ class XboxController : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
     fun x(): Double {
         lerpX =
             lerp(
+                lerpX,
                 -applyDeadband(
-                    getRawAxis(1), // right y
+                    rightY, // right y
                     Constants.OperatorConstants.DRIVE_DEADBAND,
                 ) * speedScale(),
-                lerpX,
+                Constants.OperatorConstants.LERP_VAL
             )
         return lerpX
     }
@@ -32,11 +27,12 @@ class XboxController : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
     fun y(): Double {
         lerpY =
             lerp(
+                lerpY,
                 -applyDeadband(
-                    getRawAxis(0), // right x
+                    rightX, // right x
                     Constants.OperatorConstants.DRIVE_DEADBAND,
                 ) * speedScale(),
-                lerpY,
+                Constants.OperatorConstants.LERP_VAL
             )
         return lerpY
     }
@@ -44,20 +40,21 @@ class XboxController : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
     fun rot(): Double {
         lerpRot =
             lerp(
+                lerpRot,
                 -applyDeadband(
-                    getRawAxis(4), // left x
+                    leftX, // left x
                     Constants.OperatorConstants.DRIVE_DEADBAND,
                 ) * speedScale(),
-                lerpRot,
+                Constants.OperatorConstants.LERP_VAL
             )
         return lerpRot
     }
 
-    fun speedScale(): Double = ((-rightTriggerAxis + 1))
+    fun speedScale(): Double = ((rightTrigger + 1))
 
-    fun deliveryScale(): Double = leftTriggerAxis
+    fun deliveryScale(): Double = leftTrigger
 
-    fun heading(): Trigger = this.northFace()
+    fun heading(): Trigger = faceUp()
 
     //   fun alignL() : Trigger {
     //      return Trigger { xButton }
@@ -65,30 +62,13 @@ class XboxController : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
     // fun alignR() : Trigger {
     //   return Trigger { bButton }
     // }
-    fun autoAim(): Trigger = this.southFace()
+    fun autoAim(): Trigger = faceDown()
 
-    fun lerp(
-        ref: Double,
-        start: Double,
-    ): Double {
-        if (ref > start) {
-            return if (start + Constants.OperatorConstants.LERP_VAL > ref) {
-                ref
-            } else {
-                start + Constants.OperatorConstants.LERP_VAL
-            }
-        } else {
-            return if (start - Constants.OperatorConstants.LERP_VAL < ref) {
-                ref
-            } else {
-                start - Constants.OperatorConstants.LERP_VAL
-            }
-        }
-    }
 
-    fun resetOdometry(): Trigger = this.rightStick()
 
-    fun driveToArc(): Trigger = this.start()
+    fun resetOdometry(): Trigger = rightStick()
+
+    fun driveToArc(): Trigger = start()
 
 //    fun slideLeft(): Trigger {
 //        return Trigger { leftBumperButton }
@@ -99,16 +79,16 @@ class XboxController : CommandGamepad(Constants.OperatorConstants.DRIVER_CONTROL
 //    }
 
     fun north(): Trigger {
-        return this.back() // Select Button
+        return back() // Select Button
     }
 
-    fun xLock(): Trigger = this.leftBumper()
+    fun xLock(): Trigger = leftBumper()
 
-    fun altDelivery(): Trigger = this.southFace()
+    fun altDelivery(): Trigger = faceDown()
 
-    fun altIntake(): Trigger = this.rightBumper()
+    fun altIntake(): Trigger = rightBumper()
 
-    fun altIndexer(): Trigger = this.eastFace()
+    fun altIndexer(): Trigger = faceRight()
 
-    fun shake(): Trigger = this.eastFace()
+    fun shake(): Trigger = faceRight()
 }

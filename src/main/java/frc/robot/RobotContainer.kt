@@ -13,7 +13,7 @@ import frc.robot.subsystems.LimelightSubsystem
 import frc.robot.subsystems.Logger
 import org.wpilib.command2.Command
 import org.wpilib.command2.InstantCommand
-import org.wpilib.command2.button.CommandJoystick
+import org.wpilib.command2.button.CommandGenericHID
 import org.wpilib.driverstation.GenericHID
 import org.wpilib.tunable.*
 import java.io.File
@@ -34,7 +34,7 @@ object RobotContainer {
     // private val joystickController = JoystickController()
     private val XboxController = XboxController()
 
-    private val buttonBoard = CommandJoystick(Constants.OperatorConstants.BUTTON_BOARD_PORT)
+    private val buttonBoard = CommandGenericHID(Constants.OperatorConstants.BUTTON_BOARD_PORT)
 
     private val autoChooser = Selectable<PathPlannerAuto>()
 
@@ -56,7 +56,6 @@ object RobotContainer {
         )
         configureAuto()
         configureBindings()
-        Logger.initTelemetry()
     }
 
     private fun configureBindings() {
@@ -69,15 +68,17 @@ object RobotContainer {
                 y = { XboxController.y() },
                 rot = { XboxController.rot() },
                 autoAngle = {
-                    // xBoxController.autoAim().asBoolean
+                    // XboxController.autoAim().asBoolean
                     false
                 },
             )
+            
+        XboxController.apply {
+             // Reset heading
+            heading().whileTrue(
+                ResetHeadingCommand()
+                )
 
-        // Reset heading
-        XboxController.heading().whileTrue(
-            ResetHeadingCommand(),
-        )
         // Auto Align
 //        xBoxController.alignL().whileTrue(
 //            AutoAlignManualCommand(
@@ -90,14 +91,13 @@ object RobotContainer {
         // ),
         // )
 
-        XboxController
-            .resetOdometry().whileTrue(
+        
+            resetOdometry().whileTrue(
             ResetOdometry(),
         )
 
-        XboxController
-            .driveToArc()
-            .onTrue(DriveToArcCommand())
+            driveToArc()
+                .onTrue(DriveToArcCommand())
 
 //        xBoxController
 //            .slideLeft()
@@ -139,117 +139,105 @@ object RobotContainer {
 //                ),
 //            )
 
-        XboxController.north()
-            .whileTrue(
-            NorthCommand(
-                x = { XboxController.x() },
-                y = { XboxController.y() },
-            ),
-        )
+            north()
+                .whileTrue(
+                NorthCommand(
+                    x = { XboxController.x() },
+                    y = { XboxController.y() },
+                ),
+            )
 
-        XboxController.xLock()
-            .whileTrue(
-            LockXCommand(),
-        )
+            xLock()
+                .whileTrue(
+                LockXCommand(),
+            )
 
-        XboxController.altDelivery()
-            .whileTrue(
-            DeliveryCommand(Constants.LaunchConstants.ALT_LAUNCH_SPEED),
-        )
+            altDelivery()
+                .whileTrue(
+                DeliveryCommand(Constants.LaunchConstants.ALT_LAUNCH_SPEED),
+            )
 
-        XboxController.altIntake().whileTrue(
-            IntakeCommand(false),
-        )
-        buttonBoard.button(6).multiPress(2, 1.0).toggleOnTrue(
-            InstantCommand({
-                XboxController.setRumble(GenericHID.RumbleType.LEFT_RUMBLE, 1.0)
-            }),
-        )
-        buttonBoard.button(6).multiPress(2, 1.0).toggleOnFalse(
-            InstantCommand({
-                XboxController.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 0.0)
-            }),
-        )
-
-        buttonBoard.button(7).whileTrue(
-            SuperStorageCommand(false),
-        )
-
-        // Button Board
-        buttonBoard.button(Constants.RollerConstants.BUTTON).whileTrue(
-            StorageCommand(false),
-        )
-        buttonBoard.button(Constants.OperatorConstants.INDEXER_REVERSE_BUTTON).whileTrue(
-            StorageCommand(true),
-        )
-
-        buttonBoard.button(Constants.OperatorConstants.DELIVERY_BUTTON).whileTrue(
-            DeliveryCommand(Constants.LaunchConstants.LAUNCH_SPEED),
-        )
-        if (XboxController.deliveryScale() >= 0.5) { // Yo what fucking dumbass made this
-            DeliveryCommand(XboxController.deliveryScale())
+            altIntake().whileTrue(
+                IntakeCommand(false),
+            )
         }
-        buttonBoard.button(Constants.OperatorConstants.DELIVERY_REVERSE_BUTTON).whileTrue(
-            DeliveryCommand(-Constants.LaunchConstants.LAUNCH_SPEED),
-        )
-
-        buttonBoard
-            .button(
-                Constants.OperatorConstants.INTAKE_LEVER_IN_AUTO_BUTTON,
-            ).onTrue(
-                IntakeLeverCommand(
-                    Constants.IntakeConstants.LEVER_IN_POSITION,
-                ),
+        
+        // Button Board
+        buttonBoard.apply {
+            button(7).whileTrue(
+                SuperStorageCommand(false),
             )
 
-        buttonBoard
-            .button(
-                Constants.OperatorConstants.INTAKE_LEVER_OUT_AUTO_BUTTON,
-            ).onTrue(
-                IntakeLeverCommand(
-                    Constants.IntakeConstants.LEVER_OUT_POSITION,
-                ),
+            button(Constants.RollerConstants.BUTTON).whileTrue(
+                StorageCommand(false),
+            )
+            button(Constants.OperatorConstants.INDEXER_REVERSE_BUTTON).whileTrue(
+                StorageCommand(true),
             )
 
-        buttonBoard
-            .button(
-                Constants.OperatorConstants.INTAKE_LEVER_IN_MANUAL_BUTTON,
-            ).whileTrue(
-                IntakeLeverManualCommand(
-                    Constants.IntakeDirection.IN,
-                ),
+            button(Constants.OperatorConstants.DELIVERY_BUTTON).whileTrue(
+                DeliveryCommand(Constants.LaunchConstants.LAUNCH_SPEED),
+            )
+            if (XboxController.deliveryScale() >= 0.5) {
+                DeliveryCommand(XboxController.deliveryScale())
+            }
+            
+            button(Constants.OperatorConstants.DELIVERY_REVERSE_BUTTON).whileTrue(
+                DeliveryCommand(-Constants.LaunchConstants.LAUNCH_SPEED),
             )
 
-        buttonBoard.button(6).multiPress(2, 1.0).toggleOnTrue(
-            InstantCommand({
-                XboxController.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 1.0)
-            }),
-        )
-        buttonBoard.button(6).multiPress(2, 1.0).toggleOnFalse(
-            InstantCommand({
-                XboxController.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 0.0)
-            }),
-        )
+            button(Constants.OperatorConstants.INTAKE_LEVER_IN_AUTO_BUTTON).onTrue(
+                    IntakeLeverCommand(Constants.IntakeConstants.LEVER_IN_POSITION),
+                )
 
-        buttonBoard
-            .button(
-                Constants.OperatorConstants.INTAKE_LEVER_OUT_MANUAL_BUTTON,
-            ).whileTrue(
-                IntakeLeverManualCommand(
-                    Constants.IntakeDirection.OUT,
-                ),
+            button(Constants.OperatorConstants.INTAKE_LEVER_OUT_AUTO_BUTTON).onTrue(
+                    IntakeLeverCommand(Constants.IntakeConstants.LEVER_OUT_POSITION)
+                )
+
+            button(
+                    Constants.OperatorConstants.INTAKE_LEVER_IN_MANUAL_BUTTON
+                ).whileTrue(
+                    IntakeLeverManualCommand(
+                        Constants.IntakeDirection.IN
+                    ),
+                )
+
+            button(6).multiPress(2, 1.0).toggleOnTrue(
+                InstantCommand({
+                    XboxController.hid.apply{
+                        setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 1.0)
+                        setRumble(GenericHID.RumbleType.LEFT_RUMBLE, 1.0)
+                        }
+                }),
+            )
+            button(6).multiPress(2, 1.0).toggleOnFalse(
+                InstantCommand({
+                    XboxController.hid.apply{
+                        setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, 0.0)
+                        setRumble(GenericHID.RumbleType.LEFT_RUMBLE, 0.0)
+                        }
+                }),
             )
 
-        buttonBoard.button(Constants.OperatorConstants.INTAKE_BUTTON).whileTrue(
-            IntakeCommand(
-                false,
-            ),
-        )
-        buttonBoard.button(Constants.OperatorConstants.INTAKE_REVERSE_BUTTON).whileTrue(
-            IntakeCommand(
-                true,
-            ),
-        )
+            button(
+                    Constants.OperatorConstants.INTAKE_LEVER_OUT_MANUAL_BUTTON,
+                ).whileTrue(
+                    IntakeLeverManualCommand(
+                        Constants.IntakeDirection.OUT,
+                    ),
+                )
+
+            button(Constants.OperatorConstants.INTAKE_BUTTON).whileTrue(
+                IntakeCommand(
+                    false,
+                ),
+            )
+            button(Constants.OperatorConstants.INTAKE_REVERSE_BUTTON).whileTrue(
+                IntakeCommand(
+                    true,
+                ),
+            )
+        }
     }
 
     private fun configureAuto() {
