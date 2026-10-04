@@ -5,11 +5,11 @@ package frc.robot.interfaces
 
 import org.wpilib.math.kinematics.SwerveModulePosition
 import org.wpilib.math.kinematics.SwerveModuleVelocity
-import org.wpilib.util.sendable.Sendable
-import org.wpilib.util.sendable.SendableBuilder
+import org.wpilib.telemetry.TelemetryLoggable
+import org.wpilib.telemetry.TelemetryTable
 
-interface SwerveModule : Sendable {
-    override fun initSendable(builder: SendableBuilder?) {
+interface SwerveModule : TelemetryLoggable {
+    override fun logTo(table: TelemetryTable?) {
         null
     }
 

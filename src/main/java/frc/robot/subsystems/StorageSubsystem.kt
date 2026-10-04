@@ -8,7 +8,6 @@ import com.ctre.phoenix6.hardware.TalonFX
 import frc.robot.Constants
 import frc.robot.Constants.RollerConstants
 import org.wpilib.command2.SubsystemBase
-import org.wpilib.util.sendable.SendableBuilder
 
 object StorageSubsystem : SubsystemBase() {
     private val CAN = Constants.ModuleConstants.CANBUS
@@ -32,15 +31,6 @@ object StorageSubsystem : SubsystemBase() {
         rollerMotor2.configurator.apply(rollerMotorConfig)
     }
 
-    override fun initSendable(builder: SendableBuilder?) {
-        super.initSendable(builder)
-        builder?.apply {
-            addDoubleProperty("roller 1 motor voltage", { rollerMotor.motorVoltage.valueAsDouble }, null)
-            addDoubleProperty("roller 2 motor voltage", { rollerMotor2.motorVoltage.valueAsDouble }, null)
-            addDoubleProperty("roller 1 stator current", { rollerMotor.statorCurrent.valueAsDouble }, null)
-            addDoubleProperty("roller 2 stator current", { rollerMotor2.statorCurrent.valueAsDouble }, null)
-        }
-    }
 
     fun roll(rollerSpeed: Double) {
         rollerMotor.throttle = rollerSpeed

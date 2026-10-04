@@ -13,19 +13,16 @@ import frc.robot.Constants
 import frc.robot.Constants.DriveConstants
 import frc.robot.Constants.PathPlannerConstants
 import frc.robot.Robot
-import frc.robot.interfaces.SwerveModule
 import org.wpilib.command2.SubsystemBase
 import org.wpilib.driverstation.Alliance
-import org.wpilib.driverstation.DriverStation
 import org.wpilib.driverstation.MatchState
-import org.wpilib.driverstation.RobotState
 import org.wpilib.math.geometry.Pose2d
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.kinematics.ChassisVelocities
 import org.wpilib.math.kinematics.SwerveDriveOdometry
 import org.wpilib.math.kinematics.SwerveModuleVelocity
-import org.wpilib.smartdashboard.SmartDashboard
-import org.wpilib.simulation.DCMotorSim
+import org.wpilib.telemetry.Telemetry
+import org.wpilib.telemetry.TelemetryTable
 
 interface IDriveSubsystem {
     fun getPose(): Pose2d
@@ -55,43 +52,38 @@ interface IDriveSubsystem {
 class RealDriveSubsystem :
     SubsystemBase(),
     IDriveSubsystem {
-    data class Swerve(
-        val fl: SwerveModule,
-        val fr: SwerveModule,
-        val bl: SwerveModule,
-        val br: SwerveModule,
-    )
 
     private var gyro: Pigeon2 = Pigeon2(DriveConstants.PIDGEON2_ID, Constants.CANBusIDs.PIDGEON_CANBUS)
 //    private var gyro: AHRS = AHRS(AHRS.NavXComType.kMXP_SPI)
 
-    private val driveTrain: Swerve =
-        Swerve(
-            SwerveModuleIOTalon(
+    val fl = SwerveModuleTalon(
                 DriveConstants.FRONT_LEFT_DRIVING_ID,
                 DriveConstants.FRONT_LEFT_TURNING_ID,
                 DriveConstants.FRONT_LEFT_CANCODER_ID,
                 DriveConstants.FRONT_LEFT_CHASSIS_ANGULAR_OFFSET,
-            ),
-            SwerveModuleIOTalon(
+            )
+    val fr = 
+            SwerveModuleTalon(
                 DriveConstants.FRONT_RIGHT_DRIVING_ID,
                 DriveConstants.FRONT_RIGHT_TURNING_ID,
                 DriveConstants.FRONT_RIGHT_CANCODER_ID,
                 DriveConstants.FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET,
-            ),
-            SwerveModuleIOTalon(
+            )
+    val bl = 
+            SwerveModuleTalon(
                 DriveConstants.REAR_LEFT_DRIVING_ID,
                 DriveConstants.REAR_LEFT_TURNING_ID,
                 DriveConstants.REAR_LEFT_CANCODER_ID,
                 DriveConstants.BACK_LEFT_CHASSIS_ANGULAR_OFFSET,
-            ),
-            SwerveModuleIOTalon(
+            )
+    val br = 
+            SwerveModuleTalon(
                 DriveConstants.REAR_RIGHT_DRIVING_ID,
                 DriveConstants.REAR_RIGHT_TURNING_ID,
                 DriveConstants.REAR_RIGHT_CANCODER_ID,
                 DriveConstants.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET,
-            ),
-        )
+            )
+        
 
     // TODO: Unify Units to Radians
     private var odometry =
@@ -100,10 +92,10 @@ class RealDriveSubsystem :
             Rotation2d.fromDegrees(gyro.yaw.valueAsDouble),
             // gyro.rotation3d.x
             arrayOf(
-                driveTrain.fl.getPosition(),
-                driveTrain.fr.getPosition(),
-                driveTrain.bl.getPosition(),
-                driveTrain.br.getPosition(),
+                fl.getPosition(),
+                fr.getPosition(),
+                bl.getPosition(),
+                br.getPosition(),
             ),
         )
 
@@ -113,11 +105,6 @@ class RealDriveSubsystem :
         // gyro.reset()
 //        gyro.enableBoardlevelYawReset(false)
         gyro.reset()
-
-        SmartDashboard.putData("fl", driveTrain.fl)
-        SmartDashboard.putData("fr", driveTrain.fr)
-        SmartDashboard.putData("bl", driveTrain.bl)
-        SmartDashboard.putData("br", driveTrain.br)
 
 //        for (type in Constants.SomeConstants.SwerveType.entries) {
 //            swerveTypeChooser.addOption(type.name, type)
@@ -168,17 +155,27 @@ class RealDriveSubsystem :
 //        builder?.addMotorStats(drive.fl.)
 //    }
 
+    override fun logTo(table: TelemetryTable?) {
+        super.logTo(table)
+        fl.logTo(table)
+        fr.logTo(table)
+        bl.logTo(table)
+        br.logTo(table)
+    }
+
     override fun periodic() {
         // This method will be called once per scheduler run
-//        if (Robot.isAutonomous()) {
-
+        //        if (Robot.isAutonomous()) {
+        
+        logTo(Telemetry.getTable("drive"))
+        
         odometry.update(
             Rotation2d.fromDegrees(gyro.yaw.valueAsDouble),
             arrayOf(
-                driveTrain.fl.getPosition(),
-                driveTrain.fr.getPosition(),
-                driveTrain.bl.getPosition(),
-                driveTrain.br.getPosition(),
+                fl.getPosition(),
+                fr.getPosition(),
+                bl.getPosition(),
+                br.getPosition(),
             ),
         )
 
@@ -191,10 +188,10 @@ class RealDriveSubsystem :
 
     override fun getStates(): Array<SwerveModuleVelocity> =
         arrayOf(
-            driveTrain.fl.getState(),
-            driveTrain.fr.getState(),
-            driveTrain.bl.getState(),
-            driveTrain.br.getState(),
+            fl.getState(),
+            fr.getState(),
+            bl.getState(),
+            br.getState(),
         )
 
     override fun getPose(): Pose2d = odometry.pose
@@ -203,10 +200,10 @@ class RealDriveSubsystem :
     @Suppress("TYPE_MISMATCH", "TOO_MANY_ARGUMENTS")
     override fun getCurrentSpeeds(): ChassisVelocities =
         DriveConstants.DRIVE_KINEMATICS.toChassisVelocities(
-            driveTrain.fl.getState(),
-            driveTrain.fr.getState(),
-            driveTrain.bl.getState(),
-            driveTrain.br.getState(),
+            fl.getState(),
+            fr.getState(),
+            bl.getState(),
+            br.getState(),
         )
 
     override fun resetOdometry(pose: Pose2d) {
@@ -214,10 +211,10 @@ class RealDriveSubsystem :
             Rotation2d.fromDegrees(gyro.yaw.valueAsDouble),
             // gyro.getRotation2d(),
             arrayOf(
-                driveTrain.fl.getPosition(),
-                driveTrain.fr.getPosition(),
-                driveTrain.bl.getPosition(),
-                driveTrain.br.getPosition(),
+                fl.getPosition(),
+                fr.getPosition(),
+                bl.getPosition(),
+                br.getPosition(),
             ),
             pose,
         )
@@ -237,31 +234,31 @@ class RealDriveSubsystem :
             SwerveModuleVelocities = DriveConstants.DRIVE_KINEMATICS.toSwerveModuleVelocities(speeds.toFieldRelative(Rotation2d.fromDegrees(gyro.yaw.valueAsDouble)))
         }
 
-        driveTrain.fl.setDesiredState(SwerveModuleVelocities[0])
-        driveTrain.fr.setDesiredState(SwerveModuleVelocities[1])
-        driveTrain.bl.setDesiredState(SwerveModuleVelocities[2])
-        driveTrain.br.setDesiredState(SwerveModuleVelocities[3])
+        fl.setDesiredState(SwerveModuleVelocities[0])
+        fr.setDesiredState(SwerveModuleVelocities[1])
+        bl.setDesiredState(SwerveModuleVelocities[2])
+        br.setDesiredState(SwerveModuleVelocities[3])
     }
 
     override fun setX() {
-        driveTrain.fl.setDesiredState(
+        fl.setDesiredState(
             SwerveModuleVelocity(
                 0.0,
                 Rotation2d.fromDegrees(45.0),
             ),
         )
-        driveTrain.fr.setDesiredState(
+        fr.setDesiredState(
             SwerveModuleVelocity(0.0,
                 Rotation2d.fromDegrees(-45.0),
             ),
         )
-        driveTrain.bl.setDesiredState(
+        bl.setDesiredState(
             SwerveModuleVelocity(
                 0.0,
                 Rotation2d.fromDegrees(-45.0),
             ),
         )
-        driveTrain.br.setDesiredState(
+        br.setDesiredState(
             SwerveModuleVelocity(
                 0.0,
                 Rotation2d.fromDegrees(45.0),
@@ -288,17 +285,17 @@ class RealDriveSubsystem :
 //
 //    private var m_speeds: ChassisVelocities = ChassisVelocities()
 //
-//    private val driveTrain: Swerve = Swerve(SwerveModuleSim(), SwerveModuleSim(), SwerveModuleSim(), SwerveModuleSim())
+//    private val  Swerve = Swerve(SwerveModuleSim(), SwerveModuleSim(), SwerveModuleSim(), SwerveModuleSim())
 //
 //    private var odometry =
 //        SwerveDriveOdometry(
 //            DriveConstants.DRIVE_KINEMATICS,
 //            Rotation2d(gyro.angularPosition),
 //            arrayOf(
-//                driveTrain.fl.getPosition(),
-//                driveTrain.fr.getPosition(),
-//                driveTrain.bl.getPosition(),
-//                driveTrain.br.getPosition(),
+//                fl.getPosition(),
+//                fr.getPosition(),
+//                bl.getPosition(),
+//                br.getPosition(),
 //            ),
 //        )
 //
@@ -343,10 +340,10 @@ class RealDriveSubsystem :
 //        odometry.update(
 //            Rotation2d(gyro.angularPosition),
 //            arrayOf(
-//                driveTrain.fl.getPosition(),
-//                driveTrain.fr.getPosition(),
-//                driveTrain.bl.getPosition(),
-//                driveTrain.br.getPosition(),
+//                fl.getPosition(),
+//                fr.getPosition(),
+//                bl.getPosition(),
+//                br.getPosition(),
 //            ),
 //        )
 //
@@ -359,10 +356,10 @@ class RealDriveSubsystem :
 //
 //    override fun getStates(): Array<SwerveModuleVelocity> =
 //        arrayOf(
-//            driveTrain.fl.getState(),
-//            driveTrain.fr.getState(),
-//            driveTrain.bl.getState(),
-//            driveTrain.br.getState(),
+//            fl.getState(),
+//            fr.getState(),
+//            bl.getState(),
+//            br.getState(),
 //        )
 //
 //    override fun getPose(): Pose2d = odometry.pose
@@ -371,10 +368,10 @@ class RealDriveSubsystem :
 //    @Suppress("TYPE_MISMATCH", "TOO_MANY_ARGUMENTS")
 //    override fun getCurrentSpeeds(): ChassisVelocities =
 //        DriveConstants.DRIVE_KINEMATICS.toChassisVelocities(
-//            driveTrain.fl.getState(),
-//            driveTrain.fr.getState(),
-//            driveTrain.bl.getState(),
-//            driveTrain.br.getState(),
+//            fl.getState(),
+//            fr.getState(),
+//            bl.getState(),
+//            br.getState(),
 //        )
 //
 //    override fun resetOdometry(pose: Pose2d) {
@@ -382,10 +379,10 @@ class RealDriveSubsystem :
 //            Rotation2d(gyro.angularPosition),
 //            // gyro.getRotation2d(),
 //            arrayOf(
-//                driveTrain.fl.getPosition(),
-//                driveTrain.fr.getPosition(),
-//                driveTrain.bl.getPosition(),
-//                driveTrain.br.getPosition(),
+//                fl.getPosition(),
+//                fr.getPosition(),
+//                bl.getPosition(),
+//                br.getPosition(),
 //            ),
 //            pose,
 //        )
@@ -405,32 +402,32 @@ class RealDriveSubsystem :
 //            SwerveModuleVelocities = speeds.toFieldRelative(Rotation2d.fromDegrees(gyro.angularPosition))
 //        }
 //
-//        driveTrain.fl.setDesiredState(SwerveModuleVelocities[0])
-//        driveTrain.fr.setDesiredState(SwerveModuleVelocities[1])
-//        driveTrain.bl.setDesiredState(SwerveModuleVelocities[2])
-//        driveTrain.br.setDesiredState(SwerveModuleVelocities[3])
+//        fl.setDesiredState(SwerveModuleVelocities[0])
+//        fr.setDesiredState(SwerveModuleVelocities[1])
+//        bl.setDesiredState(SwerveModuleVelocities[2])
+//        br.setDesiredState(SwerveModuleVelocities[3])
 //    }
 //
 //    override fun setX() {
-//        driveTrain.fl.setDesiredState(
+//        fl.setDesiredState(
 //            SwerveModuleVelocity(
 //                0.0,
 //                Rotation2d.fromDegrees(45.0),
 //            ),
 //        )
-//        driveTrain.fr.setDesiredState(
+//        fr.setDesiredState(
 //            SwerveModuleVelocity(
 //                0.0,
 //                Rotation2d.fromDegrees(-45.0),
 //            ),
 //        )
-//        driveTrain.bl.setDesiredState(
+//        bl.setDesiredState(
 //            SwerveModuleVelocity(
 //                0.0,
 //                Rotation2d.fromDegrees(-45.0),
 //            ),
 //        )
-//        driveTrain.br.setDesiredState(
+//        br.setDesiredState(
 //            SwerveModuleVelocity(
 //                0.0,
 //                Rotation2d.fromDegrees(45.0),

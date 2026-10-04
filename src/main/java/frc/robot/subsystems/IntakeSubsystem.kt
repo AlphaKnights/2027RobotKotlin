@@ -16,11 +16,16 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import frc.robot.Constants
 import org.wpilib.command2.SubsystemBase
 import org.wpilib.hardware.discrete.DigitalInput
-import org.wpilib.util.sendable.SendableBuilder
+import org.wpilib.telemetry.Telemetry
+import org.wpilib.telemetry.TelemetryLoggable
+import org.wpilib.telemetry.TelemetryTable
+import org.wpilib.tunable.Tunables
+
 
 object IntakeSubsystem : SubsystemBase() {
     private val CAN = Constants.ModuleConstants.CANBUS
     private val intakeMotor = TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, CAN)
+    private val telemetryTable = Telemetry.getTable("intake")
 
     val rightleverMotor =
         TalonFX(
@@ -105,64 +110,78 @@ object IntakeSubsystem : SubsystemBase() {
         intakeMotor.configurator.apply(intakeMotorConfig)
         leftLeverMotor.configurator.apply(globalConfig)
         rightleverMotor.configurator.apply(globalConfig)
+        
+        initTunable()
     }
 
-    override fun initSendable(builder: SendableBuilder) {
-        builder.apply {
-//            setSafeState {
-//                rightleverMotor.disable()
-//                intakeMotor.disable()
-//            }
-            addDoubleProperty("position", ::getPosition, ::setPosition)
-            addDoubleProperty("lever motor voltage", { rightleverMotor.motorVoltage.valueAsDouble }, null)
-            addDoubleProperty("lever stator current", { rightleverMotor.statorCurrent.valueAsDouble }, null)
-            addDoubleProperty("intake motor voltage", { intakeMotor.motorVoltage.valueAsDouble }, null)
-            addDoubleProperty("intake stator current", { intakeMotor.statorCurrent.valueAsDouble }, null)
-            addDoubleProperty("setpoint", { rightleverMotor.closedLoopReference.valueAsDouble }, null)
-            addDoubleProperty("control error", { rightleverMotor.closedLoopError.valueAsDouble }, null)
 
-            addDoubleProperty(
-                "P",
-                {
-                    globalConfig.Slot0.kP
-                },
-                { value: Double ->
-                    rightleverMotor.configurator.apply(globalConfig.Slot0.withKP(value))
-                },
-            )
+    fun initTunable() {
+    
+        val tunableTable = Tunables.getTable("intake")
+        
+        tunableTable.publishDouble("position", ::getPosition, ::setPosition)
+    
 
-            addDoubleProperty(
-                "I",
-                {
-                    globalConfig.Slot0.kI
-                },
-                { value: Double ->
-                    rightleverMotor.configurator.apply(globalConfig.Slot0.withKI(value))
-                },
-            )
+        tunableTable.publishDouble(
+            "P",
+            {
+                globalConfig.Slot0.kP
+            },
+            { value: Double ->
+                rightleverMotor.configurator.apply(globalConfig.Slot0.withKP(value))
+            },
+        )
 
-            addDoubleProperty(
-                "D",
-                {
-                    globalConfig.Slot0.kD
-                },
-                { value: Double ->
-                    rightleverMotor.configurator.apply(globalConfig.Slot0.withKD(value))
-                },
-            )
+        tunableTable.publishDouble(
+            "I",
+            {
+                globalConfig.Slot0.kI
+            },
+            { value: Double ->
+                rightleverMotor.configurator.apply(globalConfig.Slot0.withKI(value))
+            },
+        )
 
-            addDoubleProperty(
-                "kG",
-                {
-                    globalConfig.Slot0.kG
-                },
-                { value: Double ->
-                    rightleverMotor.configurator.apply(globalConfig.Slot0.withKG(value))
-                },
-            )
+        tunableTable.publishDouble(
+            "D",
+            {
+                globalConfig.Slot0.kD
+            },
+            { value: Double ->
+                rightleverMotor.configurator.apply(globalConfig.Slot0.withKD(value))
+            },
+        )
+
+        tunableTable.publishDouble(
+            "kG",
+            {
+                globalConfig.Slot0.kG
+            },
+            { value: Double ->
+                rightleverMotor.configurator.apply(globalConfig.Slot0.withKG(value))
+            },
+        )
+    
+        
+    }
+
+    override fun logTo(table: TelemetryTable?) {
+        super.logTo(table)
+        
+        table?.apply {
+            log("lever motor voltage", rightleverMotor.motorVoltage.valueAsDouble)
+            log("lever stator current", rightleverMotor.statorCurrent.valueAsDouble)
+            log("intake motor voltage", intakeMotor.motorVoltage.valueAsDouble)
+            log("intake stator current", intakeMotor.statorCurrent.valueAsDouble)
+            log("setpoint", rightleverMotor.closedLoopReference.valueAsDouble)
+            log("control error", rightleverMotor.closedLoopError.valueAsDouble)
         }
     }
-
+    
+    override fun periodic() {
+        logTo(telemetryTable)
+    }
+    
     fun runIntake(speed: Double) {
         intakeMotor.throttle = -speed
     }

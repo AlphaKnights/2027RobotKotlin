@@ -6,7 +6,7 @@ package frc.robot.subsystems
 
 import frc.robot.Constants.ModuleConstants
 import frc.robot.interfaces.SwerveModule
-import frc.robot.subsystems.Telemetry.makeTunable
+import frc.robot.subsystems.Logger.makeTunable
 import org.wpilib.math.controller.PIDController
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.kinematics.SwerveModulePosition
@@ -14,7 +14,7 @@ import org.wpilib.math.kinematics.SwerveModuleVelocity
 import org.wpilib.math.system.DCMotor
 import org.wpilib.math.system.Models
 import org.wpilib.simulation.DCMotorSim
-import org.wpilib.smartdashboard.SmartDashboard
+import org.wpilib.telemetry.Telemetry
 
 class SwerveModuleSim : SwerveModule {
     private val DRIVE_GEARBOX: DCMotor = DCMotor.getKrakenX60Foc(1)
@@ -76,7 +76,7 @@ class SwerveModuleSim : SwerveModule {
                 driveSim.angularVelocity,
                 desiredState.velocity / ModuleConstants.WHEEL_CIRCUMFERENCE,
             )
-        SmartDashboard.putNumber("driveAppliedVolts", driveAppliedVolts)
+        Telemetry.getTable().log("driveAppliedVolts", driveAppliedVolts)
 //        val turnAppliedVolts: Double =
 //            turnController.calculate(
 //                turnSim.angularPosition,

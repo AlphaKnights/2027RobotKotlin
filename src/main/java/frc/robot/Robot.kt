@@ -7,9 +7,9 @@ import org.wpilib.command2.CommandScheduler
 import org.wpilib.driverstation.DriverStation
 import org.wpilib.framework.TimedRobot
 import org.wpilib.hardware.hal.HAL
-import org.wpilib.smartdashboard.SmartDashboard
 import org.wpilib.system.DataLogManager
 import org.wpilib.system.WPILibVersion
+import org.wpilib.telemetry.Telemetry
 
 /**
  * The functions in this object (which basically functions as a singleton class) are called automatically
@@ -58,7 +58,6 @@ object Robot : TimedRobot() {
         // commands, running already-scheduled commands, removing finished or interrupted commands,
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
-        SmartDashboard.updateValues()
         CommandScheduler.getInstance().run()
     }
 

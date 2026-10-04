@@ -9,7 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
 import frc.robot.Constants.LaunchConstants
 import org.wpilib.command2.SubsystemBase
-import org.wpilib.util.sendable.SendableBuilder
+
 
 object DeliverySubsystem : SubsystemBase() {
     /*
@@ -96,24 +96,8 @@ object DeliverySubsystem : SubsystemBase() {
 //        )
     }
 
-    override fun initSendable(builder: SendableBuilder) {
-        super.initSendable(builder)
 
-        builder.apply {
-            addDoubleProperty("left motor voltage", {
-                leftLaunchMotor.motorVoltage.valueAsDouble
-            }, null)
-            addDoubleProperty("right motor voltage", {
-                rightLaunchMotor.motorVoltage.valueAsDouble
-            }, null)
-            addDoubleProperty("left stator current", {
-                leftLaunchMotor.statorCurrent.valueAsDouble
-            }, null)
-            addDoubleProperty("right stator current", {
-                rightLaunchMotor.statorCurrent.valueAsDouble
-            }, null)
-        }
-    }
+    
 
     fun forward(launchProp: Double) {
         // leftLaunchMotor.setControl(VelocityVoltage(launchProp))

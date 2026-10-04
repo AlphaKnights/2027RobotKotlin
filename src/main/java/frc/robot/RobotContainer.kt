@@ -10,14 +10,14 @@ import frc.robot.commands.autoalign.AutoAlignAutoCommand
 import frc.robot.commands.intake.*
 import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.LimelightSubsystem
-import frc.robot.subsystems.Telemetry
+import frc.robot.subsystems.Logger
 import org.wpilib.command2.Command
 import org.wpilib.command2.InstantCommand
 import org.wpilib.command2.button.CommandJoystick
 import org.wpilib.driverstation.GenericHID
-import org.wpilib.smartdashboard.SendableChooser
-import org.wpilib.smartdashboard.SmartDashboard
+import org.wpilib.tunable.*
 import java.io.File
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -36,7 +36,7 @@ object RobotContainer {
 
     private val buttonBoard = CommandJoystick(Constants.OperatorConstants.BUTTON_BOARD_PORT)
 
-    private val autoChooser = SendableChooser<PathPlannerAuto>()
+    private val autoChooser = Selectable<PathPlannerAuto>()
 
     init {
         LimelightSubsystem.startPolling()
@@ -56,7 +56,7 @@ object RobotContainer {
         )
         configureAuto()
         configureBindings()
-        Telemetry.initTelemetry()
+        Logger.initTelemetry()
     }
 
     private fun configureBindings() {
@@ -253,7 +253,7 @@ object RobotContainer {
     }
 
     private fun configureAuto() {
-        autoChooser.setDefaultOption("Default", PathPlannerAuto("Auto Deliver Only"))
+        autoChooser.addDefault("Default", PathPlannerAuto("Auto Deliver Only"))
         val autoList =
             buildList {
                 File("src/main/deploy/pathplanner/autos/").listFiles()?.forEach { auto ->
@@ -261,9 +261,9 @@ object RobotContainer {
                 }
             }
         for (auto in autoList) {
-            autoChooser.addOption(auto.name, auto)
+            autoChooser.add(auto.name, auto)
         }
-        SmartDashboard.putData("Auto Chooser", autoChooser)
+        autoChooser.publishTunable(Tunables.getTable())
     }
 
     fun getAutonomousCommand(): Command = autoChooser.selected

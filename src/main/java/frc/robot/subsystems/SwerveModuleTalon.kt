@@ -17,15 +17,14 @@ import frc.robot.interfaces.SwerveModule
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.kinematics.SwerveModulePosition
 import org.wpilib.math.kinematics.SwerveModuleVelocity
-import org.wpilib.util.sendable.Sendable
-import org.wpilib.util.sendable.SendableBuilder
+import org.wpilib.telemetry.TelemetryTable
 
-class SwerveModuleIOTalon(
+class SwerveModuleTalon(
     driveMotorId: Int,
     turnMotorId: Int,
     encoderId: Int,
     private val offset: Rotation2d,
-) : SwerveModule, Sendable {
+) : SwerveModule {
     private val driveMotor = TalonFX(driveMotorId, Constants.CANBusIDs.DRIVE_CANBUS)
     private val turnMotor = TalonFX(turnMotorId, Constants.CANBusIDs.DRIVE_CANBUS)
     private val encoder = CANcoder(encoderId, Constants.CANBusIDs.DRIVE_CANBUS)
@@ -40,6 +39,7 @@ class SwerveModuleIOTalon(
 
 
     init {
+        
         val driveMotorConfig =
             TalonFXConfiguration().apply {
                 CurrentLimits.apply {
@@ -128,6 +128,17 @@ class SwerveModuleIOTalon(
         driveMotor.setPosition(0.0)
     }
 
+
+    override fun logTo(table: TelemetryTable?) {
+        table?.apply {
+            log("drive stator current", driveMotor.statorCurrent.valueAsDouble)
+            log("drive motor voltage", driveMotor.motorVoltage.valueAsDouble)
+            log("turn stator current", turnMotor.statorCurrent.valueAsDouble)
+            log("turn motor voltage", turnMotor.motorVoltage.valueAsDouble)
+        }
+    }
+    
+    
     override fun getPosition(): SwerveModulePosition =
         SwerveModulePosition(
             // driveMotor.rotor
@@ -171,12 +182,5 @@ class SwerveModuleIOTalon(
         this.desiredState = desiredState
     }
 
-    override fun initSendable(builder: SendableBuilder?) {
-        builder?.apply {
-            addDoubleProperty("drive motor voltage", { driveMotor.motorVoltage.valueAsDouble }, null)
-            addDoubleProperty("turn motor voltage", { turnMotor.motorVoltage.valueAsDouble }, null)
-            addDoubleProperty("drive stator current", { driveMotor.statorCurrent.valueAsDouble }, null)
-            addDoubleProperty("turn stator current", { turnMotor.statorCurrent.valueAsDouble }, null)
-        }
-    }
+
 }

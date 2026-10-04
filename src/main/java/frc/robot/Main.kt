@@ -26,4 +26,4 @@ import org.wpilib.framework.TimedRobot
  * Rename * Refactoring when renaming the object, it will get changed everywhere
  * including here.)
  */
-fun main() = RobotBase.startRobot<Robot>(Robot::class.java)
+fun main() = RobotBase.startRobot { Robot }
