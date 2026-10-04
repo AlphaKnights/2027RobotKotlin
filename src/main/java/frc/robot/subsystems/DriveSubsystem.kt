@@ -454,7 +454,7 @@ class RealDriveSubsystem :
 class SimpleSimDriveSubsystem :
     SubsystemBase(),
     IDriveSubsystem {
-    var m_pose: Pose2d = Pose2d.kZero
+    var m_pose: Pose2d = Pose2d.ZERO
     var m_speeds: ChassisVelocities = ChassisVelocities()
 
     private val config: RobotConfig = RobotConfig.fromGUISettings()
